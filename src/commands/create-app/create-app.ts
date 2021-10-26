@@ -33,7 +33,7 @@ export const createAppAction =
     ];
 
     try {
-      const boilerplatePath = path.join(__dirname, '../../../boilerplate');
+      const boilerplatePath = path.join(__dirname, '../../../template');
 
       out = await execSh.promise(
         `create-react-app ${app} --template typescript && \

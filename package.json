@@ -1,7 +1,13 @@
 {
   "name": "@inspireitdev/react-cli",
   "version": "1.0.6",
+  "description": "CLI tool to help create React resources.",
   "license": "MIT",
+  "author": "André Alves <dronept@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DronePT/inspireitdev-react-cli.git"
+  },
   "main": "./lib/cli.js",
   "bin": {
     "inspire-react": "lib/cli.js"
@@ -39,13 +45,8 @@
     "prettier": "^2.4.1",
     "rimraf": "^3.0.2"
   },
-  "directories": {
-    "lib": "lib"
-  },
-  "author": "André Alves <dronept@gmail.com>",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/DronePT/inspireitdev-react-cli.git"
-  },
-  "description": "CLI tool to help create React resources."
+  "files": [
+    "lib",
+    "template"
+  ]
 }

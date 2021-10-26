@@ -1,6 +1,6 @@
 {
   "name": "@inspireitdev/react-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "license": "MIT",
   "main": "./lib/cli.js",
   "bin": {

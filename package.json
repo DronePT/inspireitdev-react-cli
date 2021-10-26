@@ -42,5 +42,9 @@
     "lib": "lib"
   },
   "author": "André Alves <dronept@gmail.com>",
-  "description": "CLI to help create React resources."
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DronePT/inspireitdev-react-cli.git"
+  },
+  "description": "CLI tool to help create React resources."
 }

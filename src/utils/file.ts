@@ -9,7 +9,10 @@ export const createFile = (
   fs.writeFileSync(path.join(filepath, filename), content);
 };
 
-export const createExportFile = (filepath: string | string[]): void => {
+export const createExportFile = (
+  filepath: string | string[],
+  recursiveUntilPath = 'modules',
+): void => {
   const dir = Array.isArray(filepath)
     ? path.join(...filepath)
     : path.join(filepath);
@@ -33,7 +36,9 @@ export const createExportFile = (filepath: string | string[]): void => {
 
   createFile(dir, 'index.ts', `${content}\n`);
 
-  if (basename !== 'modules') {
-    createExportFile(path.join(dir, '..'));
+  const newDir = path.join(dir, '..');
+
+  if (basename !== recursiveUntilPath && newDir !== process.cwd()) {
+    createExportFile(newDir, recursiveUntilPath);
   }
 };

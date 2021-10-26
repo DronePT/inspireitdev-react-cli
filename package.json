@@ -13,7 +13,7 @@
     "inspire-react": "lib/cli.js"
   },
   "scripts": {
-    "start": "ts-node-dev --inspect --rs --respawn src/cli.ts -d ./demo-auth/src component text-input",
+    "start": "ts-node-dev --inspect --rs --respawn src/cli.ts -d ./demo-auth/src domain auth user",
     "copy-files": "copyfiles -u 1 src/**/*.tpl lib/",
     "prebuild": "rimraf lib && yarn copy-files",
     "build": "tsc"

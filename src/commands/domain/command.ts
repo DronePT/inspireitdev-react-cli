@@ -10,7 +10,7 @@ export const install = (program: Command) => {
       'Name of the file for this domain/business logic.',
     )
     .argument(
-      '<domain-type>',
+      '[domain-type]',
       'What type of domain logic it belongs. (Eg.: Entity, Model, Value Objects, etc...)',
     )
     .option('-f --force', 'Overwrite any existing file.')

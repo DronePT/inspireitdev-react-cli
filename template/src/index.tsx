@@ -4,7 +4,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 import { routerConfiguration } from './router-configuration';
 
-import './index.scss';
+import './index.css';
 import { AppRouter } from './components';
 
 ReactDOM.render(

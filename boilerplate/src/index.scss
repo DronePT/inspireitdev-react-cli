@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600&family=Nunito:wght@300;400;700&display=swap');
+
+body {
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+
+  @apply bg-blue-100 text-gray-900;
+}
+
+* {
+  font-family: inherit;
+}
+
+@layer base {
+  .font-heading {
+    font-family: 'Chakra Petch', sans-serif;
+    font-weight: 600;
+  }
+
+  .heading {
+    @apply font-heading font-normal;
+  }
+
+  h1,
+  h2,
+  h3,
+  h3,
+  h5,
+  h6 {
+    @apply heading;
+  }
+
+  h1 {
+    @apply text-5xl;
+  }
+
+  h2 {
+    @apply text-4xl;
+  }
+
+  h3 {
+    @apply text-3xl;
+  }
+
+  h4 {
+    @apply text-2xl;
+  }
+
+  h5 {
+    @apply text-xl;
+  }
+
+  h6 {
+    @apply text-lg;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-1 rounded-md shadow-md;
+  }
+
+  .btn-primary {
+    @apply text-white bg-pink-500 hover:bg-pink-400 focus:bg-pink-600;
+  }
+
+  .btn-secondary {
+    @apply text-white bg-blue-500 hover:bg-blue-400 focus:bg-blue-600;
+  }
+}

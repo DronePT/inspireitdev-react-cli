@@ -73,7 +73,7 @@ export const createExportFile = async (
 
       return {
         isDir,
-        value: `export * from './${fd}'`,
+        value: `export * from './${fd}';`,
       };
     });
 

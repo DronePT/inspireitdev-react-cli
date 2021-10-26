@@ -36,5 +36,9 @@ fileCommand.install(program);
 createAppCommand.install(program);
 
 (async () => {
-  await program.parseAsync(process.argv);
+  try {
+    await program.parseAsync(process.argv);
+  } catch (error) {
+    console.error(error);
+  }
 })();

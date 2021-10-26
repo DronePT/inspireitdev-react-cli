@@ -63,7 +63,7 @@ export const createAppAction =
 
       const steps = [
         {
-          command: `create-react-app ${app} --template typescript`,
+          command: `npx create-react-app ${app} --template typescript`,
           message: 'create-react-app done!',
           cwd: process.cwd(),
         },

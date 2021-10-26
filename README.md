@@ -4,7 +4,6 @@ This tool was done to help create React resources for Inspire IT React Boilerpla
 
 ### Requirements
   - [Yarn](https://yarnpkg.com/) installed
-  - `create-react-app` globally installed (`yarn global add create-react-app`)
 
 ## Install:
 `npm install -g @inspireitdev/react-cli`
@@ -14,3 +13,7 @@ This tool was done to help create React resources for Inspire IT React Boilerpla
 
 #### Create a new React App:
 `inspire-react create-app <app-name>`
+
+## TODO
+
+- [ ] Automatically add to route configuration when creating a page.

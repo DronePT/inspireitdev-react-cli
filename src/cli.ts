@@ -33,4 +33,6 @@ domainCommand.install(program);
 utilCommand.install(program);
 fileCommand.install(program);
 
-program.parse(process.argv);
+(async () => {
+  await program.parseAsync(process.argv);
+})();

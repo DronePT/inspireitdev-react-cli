@@ -7,7 +7,12 @@ import { toHyphen } from '../../utils/to-hyphen';
 
 export const createDomainAction =
   (program: Command) =>
-  (moduleName: string, domainName: string, domainType: string) => {
+  async (
+    moduleName: string,
+    domainName: string,
+    domainType: string,
+    options: any,
+  ) => {
     const domainPath = createDirectory([
       createModulePath(program, moduleName),
       'domain',
@@ -16,14 +21,15 @@ export const createDomainAction =
     const name = toHyphen(domainName);
     const type = toHyphen(domainType);
 
-    createFile(
+    await createFile(
       domainPath,
       `${name}.${type}.ts`,
       getFromTemplate([__dirname, 'create-domain.tpl'], {
         domain: toCamelCase(name),
         type: toCamelCase(type),
       }),
+      options?.force === true,
     );
 
-    createExportFile(domainPath); // export domain
+    await createExportFile(domainPath); // export domain
   };

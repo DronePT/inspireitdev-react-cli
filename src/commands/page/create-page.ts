@@ -5,7 +5,8 @@ import { createExportFile, createFile } from '../../utils/file';
 import { getFromTemplate } from '../../utils/template';
 
 export const createPageAction =
-  (program: Command) => (moduleName: string, pageName: string) => {
+  (program: Command) =>
+  async (moduleName: string, pageName: string, options: any) => {
     const page = `${toCamelCase(pageName)}Page`;
 
     const pagePath = createDirectory([
@@ -14,11 +15,12 @@ export const createPageAction =
       page,
     ]);
 
-    createFile(
+    await createFile(
       pagePath,
       `${page}.tsx`,
       getFromTemplate([__dirname, 'create-page.tpl'], { page }),
+      options?.force === true,
     );
 
-    createExportFile(pagePath); // export file
+    await createExportFile(pagePath); // export file
   };

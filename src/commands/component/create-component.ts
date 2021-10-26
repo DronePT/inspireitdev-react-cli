@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import path from 'path';
+
 import { toCamelCase } from '../../utils/camel-case';
 import { createDirectory, createModulePath } from '../../utils/directory';
 import { createExportFile, createFile } from '../../utils/file';
@@ -7,7 +8,12 @@ import { getFromTemplate } from '../../utils/template';
 
 export const createComponentAction =
   (program: Command) =>
-  (moduleName: string, componentName: string, otherDir?: string) => {
+  async (
+    moduleName: string,
+    componentName: string,
+    otherDir: string,
+    options: any,
+  ) => {
     const component = toCamelCase(componentName, true);
 
     let modulePath = createModulePath(program, moduleName);
@@ -22,11 +28,12 @@ export const createComponentAction =
       component,
     ]);
 
-    createFile(
+    await createFile(
       componentPath,
       `${component}.tsx`,
       getFromTemplate([__dirname, 'create-component.tpl'], { component }),
+      options?.force === true,
     );
 
-    createExportFile(componentPath); // export file
+    await createExportFile(componentPath); // export file
   };

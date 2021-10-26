@@ -7,7 +7,7 @@
     "inspire-react": "lib/cli.js"
   },
   "scripts": {
-    "start": "ts-node-dev --inspect --rs --respawn src/cli.ts -d ./demo file some-dir/inside/fileEsquesito,soporque-sim.json",
+    "start": "ts-node-dev --inspect --rs --respawn src/cli.ts -d ./demo component auth signin-form",
     "copy-files": "copyfiles -u 1 src/**/*.tpl lib/",
     "prebuild": "rimraf lib && yarn copy-files",
     "build": "tsc"

@@ -6,7 +6,8 @@ import { getFromTemplate } from '../../utils/template';
 import { toHyphen } from '../../utils/to-hyphen';
 
 export const createStoreAction =
-  (program: Command) => (moduleName: string, storeName: string) => {
+  (program: Command) =>
+  async (moduleName: string, storeName: string, options: any) => {
     const storePath = createDirectory([
       createModulePath(program, moduleName),
       'store',
@@ -14,13 +15,14 @@ export const createStoreAction =
 
     const store = toHyphen(storeName);
 
-    createFile(
+    await createFile(
       storePath,
       `${store}.store.ts`,
       getFromTemplate([__dirname, 'create-store.tpl'], {
         store: toCamelCase(store),
       }),
+      options?.force === true,
     );
 
-    createExportFile(storePath); // export store
+    await createExportFile(storePath); // export store
   };

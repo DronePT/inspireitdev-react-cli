@@ -6,7 +6,8 @@ import { getFromTemplate } from '../../utils/template';
 import { toHyphen } from '../../utils/to-hyphen';
 
 export const createServiceAction =
-  (program: Command) => (moduleName: string, serviceName: string) => {
+  (program: Command) =>
+  async (moduleName: string, serviceName: string, options: any) => {
     const servicePath = createDirectory([
       createModulePath(program, moduleName),
       'services',
@@ -14,13 +15,14 @@ export const createServiceAction =
 
     const service = toHyphen(serviceName);
 
-    createFile(
+    await createFile(
       servicePath,
       `${service}.service.ts`,
       getFromTemplate([__dirname, 'create-service.tpl'], {
         service: toCamelCase(service),
       }),
+      options?.force === true,
     );
 
-    createExportFile(servicePath); // export service
+    await createExportFile(servicePath); // export service
   };

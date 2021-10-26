@@ -1,11 +1,11 @@
 import { Command } from 'commander';
 import path from 'path';
 import { createDirectory } from '../../utils/directory';
-import { createExportFile, createFile } from '../../utils/file';
+import { createFile } from '../../utils/file';
 import { toHyphen } from '../../utils/to-hyphen';
 
 export const createFileAction =
-  (program: Command) => (inputFilePath: string) => {
+  (program: Command) => async (inputFilePath: string, options: any) => {
     const filePathDir = path.dirname(
       path.join(program.opts().destination, inputFilePath),
     );
@@ -17,5 +17,10 @@ export const createFileAction =
 
     const newFileName = toHyphen(filename);
 
-    createFile(filePath, `${newFileName}${ext}`, '\n');
+    await createFile(
+      filePath,
+      `${newFileName}${ext}`,
+      '\n',
+      options?.force === true,
+    );
   };

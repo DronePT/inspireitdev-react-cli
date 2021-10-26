@@ -5,18 +5,20 @@ import { createExportFile, createFile } from '../../utils/file';
 import { getFromTemplate } from '../../utils/template';
 import { toHyphen } from '../../utils/to-hyphen';
 
-export const createUtilAction = (program: Command) => (utilName: string) => {
-  const utilPath = createDirectory([program.opts().destination, 'utils']);
+export const createUtilAction =
+  (program: Command) => async (utilName: string, options: any) => {
+    const utilPath = createDirectory([program.opts().destination, 'utils']);
 
-  const util = toHyphen(utilName);
+    const util = toHyphen(utilName);
 
-  createFile(
-    utilPath,
-    `${util}.util.ts`,
-    getFromTemplate([__dirname, 'create-util.tpl'], {
-      util: toCamelCase(util),
-    }),
-  );
+    await createFile(
+      utilPath,
+      `${util}.util.ts`,
+      getFromTemplate([__dirname, 'create-util.tpl'], {
+        util: toCamelCase(util),
+      }),
+      options?.force === true,
+    );
 
-  createExportFile(utilPath, 'utils'); // export util
-};
+    await createExportFile(utilPath, 'utils'); // export util
+  };

@@ -6,7 +6,8 @@ import { getFromTemplate } from '../../utils/template';
 import { toHyphen } from '../../utils/to-hyphen';
 
 export const createHookAction =
-  (program: Command) => (moduleName: string, hookName: string) => {
+  (program: Command) =>
+  async (moduleName: string, hookName: string, options: any) => {
     const hookPath = createDirectory([
       createModulePath(program, moduleName),
       'hooks',
@@ -14,13 +15,14 @@ export const createHookAction =
 
     const hook = toHyphen(hookName);
 
-    createFile(
+    await createFile(
       hookPath,
       `use-${hook}.hook.ts`,
       getFromTemplate([__dirname, 'create-hook.tpl'], {
         hook: toCamelCase(hook),
       }),
+      options?.force === true,
     );
 
-    createExportFile(hookPath); // export hook
+    await createExportFile(hookPath); // export hook
   };

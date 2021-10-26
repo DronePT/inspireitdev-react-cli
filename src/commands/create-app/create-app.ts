@@ -38,6 +38,7 @@ export const createAppAction =
     const app = toHyphen(appName);
 
     const devDeps = [
+      '@types/react-dom',
       'tailwindcss@npm:@tailwindcss/postcss7-compat',
       'postcss@^7',
       'autoprefixer@^9',

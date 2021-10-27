@@ -102,7 +102,7 @@ export const createAppAction =
         : [
             {
               command: `npx create-react-app ${app}${
-                useNpm ? '--use-mpm' : ''
+                useNpm ? ' --use-mpm' : ''
               } --template typescript`,
               message: 'create-react-app done!',
               cwd: process.cwd(),

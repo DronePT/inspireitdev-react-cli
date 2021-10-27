@@ -3,6 +3,8 @@ export interface RouteEntry {
   component?: () => JSX.Element;
   exact?: boolean;
   routes?: RouteEntry[];
+  requiresAuth?: boolean;
+  unauthorizedRedirectTo?: string;
 }
 
 const routesConfigurationReducer =

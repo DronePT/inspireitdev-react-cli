@@ -5,7 +5,7 @@ import { RecoilRoot } from 'recoil';
 import { routerConfiguration } from './router-configuration';
 
 import './index.css';
-import { AppRouter } from './components';
+import { AppRouter } from './core';
 
 ReactDOM.render(
   <React.StrictMode>

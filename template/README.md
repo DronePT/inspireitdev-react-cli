@@ -3,33 +3,13 @@
 
 This project has the purpose of being used as an initial structure for a React project.
 
-#### Start development:
-```bash
-yarn start
-```
-
-#### Build project:
-```bash
-yarn build
-```
-#### Create resources:
-```bash
-yarn cli --help
-```
-##### *Example:*
-```bash
-yarn cli page auth login
-yarn cli component auth login-form
-yarn cli hook auth login
-```
-
 ### File structure
 
 ```bash
 src
 ├── assets - Application assets, non-specific to a a module. (Eg.: app logo)
 ├── components - Re-usable components through all application. (Eg.: <TextInput />)
-├── core - Core functionalities to build  up the app.
+├── core - Core functionalities to run the application.
 ├── modules
 │   └── module-name (Eg.: Auth)
 │       ├── assets - Module specific assets.
@@ -51,17 +31,55 @@ src
 └── utils - Utilities shared through all application.
 ```
 
-#### Route Configuration
-- Application route is configured through `router-configuration.tsx` file.
+---
+
+#### Start development:
+```bash
+yarn start
+```
+
+#### Build project:
+```bash
+yarn build
+```
+#### Create resources:
+```bash
+yarn cli --help
+```
+##### *Example:*
+```bash
+yarn cli page auth login
+yarn cli component auth login-form
+yarn cli hook auth login
+```
+
+---
+
+### Route Configuration
+- Application route is configured through `<AppRouter />` component on `src/index.tsx` and `router-configuration.tsx` file.
+
+`<AppRouter />` has the following properties signature:
+
+```typescript
+interface AppRouterProps {
+  routes: RouteEntry[]; // List of routes (check below how to configure)
+  checkLoginStatus?: () => boolean; // Function which will be invoked on Private Routes.
+  unauthorizedRedirectTo?: string; // default redirect page path for unauthorized access.
+  notFoundComponent?: React.ComponentClass | React.FunctionComponent; // Component for not path's..
+}
+```
+
 
 Routes are composed by an array of `RouteEntry` entries, each entry define's a path/endpoint with or without sub-routes (`routes` key):
 
 ```typescript
-{
-  path: string; // Path to match the URL
-  component?: () => JSX.Element; // Component/page to be loaded
-  exact?: boolean; // should component be loaded with exact path?
-  routes?: RouteEntry[]; //
+interface RouteEntry {
+  path: string; // URL to match route
+  component?: () => JSX.Element; // Component/page which will be loaded
+  exact?: boolean; // If true, it will only render if url matches exactly the path
+  routes?: RouteEntry[]; // Sub-routing configuration
+  requiresAuth?: boolean; // If true, it will only render if checkLoginStatus() returns true.
+  unauthorizedRedirectTo?: string; // Overwrite the default redirect defined on <AppRouter />
 }
 ```
 
@@ -89,10 +107,13 @@ Routes are composed by an array of `RouteEntry` entries, each entry define's a p
 ]
 ```
 
-### Documentation for the modules used by this boilerplate
+---
+### Documentation for libraries in use
 
 - [React TypeScript Cheat sheet](https://github.com/typescript-cheatsheets/react#reacttypescript-cheatsheets)
-- [Recoil - State Management](https://recoiljs.org/docs/introduction/core-concepts)
-- [TailwindCSS](https://recoiljs.org/docs/introduction/core-concepts)
+- [react-router-dom](https://reactrouter.com/web/guides/quick-start) - Routing management
+- [recoil](https://recoiljs.org/docs/introduction/core-concepts) - State management
+- [react-hook-form](hhttps://react-hook-form.com/get-started) - Forms validation
+- [TailwindCSS](https://tailwindcss.com/docs) - CSS utility
   - Remove TailwindCSS from the project by reverting the install process:
     - https://tailwindcss.com/docs/guides/create-react-app

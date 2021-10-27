@@ -1,3 +1,3 @@
-export * from './entity';
-export * from './value-object';
-export * from './build-router-configuration';
+export * from './components';
+export * from './domain';
+export * from './utils';

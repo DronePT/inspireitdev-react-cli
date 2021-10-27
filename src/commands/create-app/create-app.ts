@@ -52,6 +52,7 @@ export const createAppAction =
       'clsx',
       'fast-deep-equal',
       'node-sass',
+      'react-hook-form',
       'react-router-dom',
       'recoil',
     ];

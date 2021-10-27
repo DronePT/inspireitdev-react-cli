@@ -66,7 +66,7 @@ export const createExportFile = async (
 
   const filesAndDirs = fs
     .readdirSync(dir)
-    .filter((f) => f.indexOf('index') < 0)
+    .filter((f) => f.indexOf('index') < 0 && f !== 'assets')
     .map((f) => {
       const isDir = fs.statSync(path.join(dir, f)).isDirectory();
       const fd = path.basename(f, path.extname(f));

@@ -60,6 +60,8 @@ export const createAppAction =
     try {
       const templatePath = path.join(__dirname, '../../../template');
       const appDir = path.join(process.cwd(), app);
+      const srcDir = path.join(appDir, 'src');
+      const isWindows = process.platform === 'win32';
 
       console.warn('🏁 Creating app...');
 
@@ -80,7 +82,14 @@ export const createAppAction =
           cwd: appDir,
         },
         {
-          command: `rm -rf src && cp -Rf ${templatePath}/* .`,
+          command: isWindows ? `rmdir ${srcDir} /s /q` : `rm -rf ${srcDir}`,
+          message: 'CRA default src/ directory removed!',
+          cwd: appDir,
+        },
+        {
+          command: isWindows
+            ? `copy /y ${templatePath}/*  .`
+            : `cp -Rf ${templatePath}/* .`,
           message: 'Boilerplate files copied to app folder!',
           cwd: appDir,
         },

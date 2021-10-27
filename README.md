@@ -13,10 +13,10 @@ This tool was done to help create React resources for Inspire IT React Boilerpla
 
 #### Create a new React App:
 `inspire-react create-app <app-name>`
-
+ca
 ## TODO
 
+- [X] Add option to choose between `yarn`or `npm`
 - [ ] Detect if application directory already exists when executing `create-app`
-- [ ] Add option to choose between `yarn`or `npm`
 - [ ] Automatically add to route configuration when creating a page.
 - [ ] Add new command to uninstall TailwindCSS

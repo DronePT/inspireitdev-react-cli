@@ -20,6 +20,7 @@ export const createStoreAction =
       `${store}.store.ts`,
       getFromTemplate([__dirname, 'create-store.tpl'], {
         store: toCamelCase(store),
+        lStore: toCamelCase(store, false),
       }),
       options?.force === true,
     );

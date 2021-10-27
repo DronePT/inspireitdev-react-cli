@@ -88,7 +88,7 @@ export const createAppAction =
         },
         {
           command: isWindows
-            ? `Xcopy "${templatePath}"  . /E /H /C /I /Y`
+            ? `Xcopy "${templatePath}" "${appDir}" /E /H /C /I /Y`
             : `cp -Rf ${templatePath}${path.sep}* .`,
           message: 'Boilerplate files copied to app folder!',
           cwd: appDir,

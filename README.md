@@ -16,5 +16,6 @@ This tool was done to help create React resources for Inspire IT React Boilerpla
 
 ## TODO
 
+- [ ] Detect if application directory already exists when executing `create-app`
 - [ ] Automatically add to route configuration when creating a page.
 - [ ] Add new command to uninstall TailwindCSS

@@ -88,8 +88,8 @@ export const createAppAction =
         },
         {
           command: isWindows
-            ? `copy /y ${templatePath}/*  .`
-            : `cp -Rf ${templatePath}/* .`,
+            ? `copy /y ${templatePath}${path.sep}*  .`
+            : `cp -Rf ${templatePath}${path.sep}* .`,
           message: 'Boilerplate files copied to app folder!',
           cwd: appDir,
         },

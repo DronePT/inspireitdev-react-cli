@@ -44,7 +44,10 @@ const replacePackageJsonScripts = (appDir: string) => {
 
 export const createAppAction =
   (program: Command) =>
-  async (appName: string, options: { copyOnly?: boolean }): Promise<void> => {
+  async (
+    appName: string,
+    options: { useNpm?: boolean; copyOnly?: boolean },
+  ): Promise<void> => {
     const app = toHyphen(appName);
 
     const devDeps = [
@@ -92,21 +95,29 @@ export const createAppAction =
         },
       ];
 
-      const steps: ShellCommand[] = options.copyOnly
+      const { copyOnly, useNpm } = options;
+
+      const steps: ShellCommand[] = copyOnly
         ? copyTemplateCommands
         : [
             {
-              command: `npx create-react-app ${app} --template typescript`,
+              command: `npx create-react-app ${app}${
+                useNpm ? '--use-mpm' : ''
+              } --template typescript`,
               message: 'create-react-app done!',
               cwd: process.cwd(),
             },
             {
-              command: `yarn add --dev ${devDeps.join(' ')}`,
+              command: `${
+                useNpm ? 'npm install --save-dev' : 'yarn add --dev'
+              } ${devDeps.join(' ')}`,
               message: 'Dev dependencies installed!',
               cwd: appDir,
             },
             {
-              command: `yarn add ${prodDeps.join(' ')}`,
+              command: `${useNpm ? 'npm install' : 'yarn add'} ${prodDeps.join(
+                ' ',
+              )}`,
               message: 'Production dependencies installed!',
               cwd: appDir,
             },

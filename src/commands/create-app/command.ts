@@ -6,5 +6,6 @@ export const install = (program: Command) => {
     .command('create-app')
     .argument('<app-name>', 'React Application name.')
     .option('-c --copy-only', 'Copy template files only.')
+    .option('--use-npm', 'Use NPM instead of Yarn.')
     .action(createAppAction(program));
 };

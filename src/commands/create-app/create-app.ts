@@ -1,13 +1,23 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
 import { Command } from 'commander';
 import execSh from 'exec-sh';
 import path from 'path';
 
 import fs from 'fs';
+import fsExtra from 'fs-extra';
 import { toHyphen } from '../../utils/to-hyphen';
 
 interface ExecError {
   stderr: string;
   stdout: string;
+}
+
+interface ShellCommand {
+  commandFn?: () => Promise<void>;
+  command: string;
+  message: string;
+  cwd: string;
 }
 
 const createStepWrite = (total = 1) => {
@@ -34,7 +44,7 @@ const replacePackageJsonScripts = (appDir: string) => {
 
 export const createAppAction =
   (program: Command) =>
-  async (appName: string): Promise<void> => {
+  async (appName: string, options: { copyOnly?: boolean }): Promise<void> => {
     const app = toHyphen(appName);
 
     const devDeps = [
@@ -64,44 +74,56 @@ export const createAppAction =
       const isWindows = process.platform === 'win32';
 
       console.warn('🏁 Creating app...');
-
-      const steps = [
+      const copyTemplateCommands = [
         {
-          command: `npx create-react-app ${app} --template typescript`,
-          message: 'create-react-app done!',
-          cwd: process.cwd(),
-        },
-        {
-          command: `yarn add --dev ${devDeps.join(' ')}`,
-          message: 'Dev dependencies installed!',
-          cwd: appDir,
-        },
-        {
-          command: `yarn add ${prodDeps.join(' ')}`,
-          message: 'Production dependencies installed!',
-          cwd: appDir,
-        },
-        {
-          command: isWindows ? `rmdir ${srcDir} /s /q` : `rm -rf ${srcDir}`,
+          commandFn: () => fsExtra.remove(srcDir),
+          command: 'Removing CRA default src/ directory.',
           message: 'CRA default src/ directory removed!',
           cwd: appDir,
         },
         {
-          command: isWindows
-            ? `Xcopy "${templatePath}" "${appDir}" /E /H /C /I /Y`
-            : `cp -Rf ${templatePath}${path.sep}* .`,
-          message: 'Boilerplate files copied to app folder!',
+          commandFn: () =>
+            fsExtra.copy(templatePath, appDir, {
+              overwrite: true,
+            }),
+          command: 'Copying InspireIT React template files.',
+          message: 'InspireIT React files copied to app folder!',
           cwd: appDir,
         },
       ];
 
+      const steps: ShellCommand[] = options.copyOnly
+        ? copyTemplateCommands
+        : [
+            {
+              command: `npx create-react-app ${app} --template typescript`,
+              message: 'create-react-app done!',
+              cwd: process.cwd(),
+            },
+            {
+              command: `yarn add --dev ${devDeps.join(' ')}`,
+              message: 'Dev dependencies installed!',
+              cwd: appDir,
+            },
+            {
+              command: `yarn add ${prodDeps.join(' ')}`,
+              message: 'Production dependencies installed!',
+              cwd: appDir,
+            },
+            ...copyTemplateCommands,
+          ];
+
       const stepWrite = createStepWrite(steps.length);
 
-      // eslint-disable-next-line no-restricted-syntax
       for (const step of steps) {
         console.warn(`ℹ️  Executing: ${step.command}`);
-        // eslint-disable-next-line no-await-in-loop
-        await execSh.promise(step.command, { cwd: step.cwd, stdio: null });
+
+        if (!step.commandFn && step.command) {
+          await execSh.promise(step.command, { cwd: step.cwd, stdio: null });
+        }
+
+        if (step.commandFn) await step.commandFn();
+
         stepWrite(step.message);
       }
 

@@ -27,5 +27,5 @@ export const createSharedComponent = async (
     options?.force === true,
   );
 
-  await createExportFile(componentPath); // export file
+  await createExportFile(componentPath, 'components'); // export file
 };

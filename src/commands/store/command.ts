@@ -6,5 +6,6 @@ export const install = (program: Command) => {
     .command('store')
     .arguments('<module> <store-name>')
     .option('-f --force', 'Overwrite any existing file.')
+    .option('-l --lib <lib>', 'Store Library in use.')
     .action(createStoreAction(program));
 };

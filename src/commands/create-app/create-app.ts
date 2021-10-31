@@ -57,7 +57,6 @@ export const createAppAction =
       'autoprefixer@^9',
       '@inspireitdev/react-cli',
       '@types/react-router',
-      '@types/recoil',
       '@types/react-router-dom',
     ];
     const prodDeps = [
@@ -67,7 +66,7 @@ export const createAppAction =
       'node-sass',
       'react-hook-form',
       'react-router-dom',
-      'recoil',
+      'zustand',
     ];
 
     try {

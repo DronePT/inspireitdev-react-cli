@@ -112,7 +112,7 @@ interface RouteEntry {
 
 - [React TypeScript Cheat sheet](https://github.com/typescript-cheatsheets/react#reacttypescript-cheatsheets)
 - [react-router-dom](https://reactrouter.com/web/guides/quick-start) - Routing management
-- [recoil](https://recoiljs.org/docs/introduction/core-concepts) - State management
+- [Zustand](https://www.npmjs.com/package/zustand) - State management
 - [react-hook-form](hhttps://react-hook-form.com/get-started) - Forms validation
 - [TailwindCSS](https://tailwindcss.com/docs) - CSS utility
   - Remove TailwindCSS from the project by reverting the install process:

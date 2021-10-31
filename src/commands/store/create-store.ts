@@ -1,13 +1,57 @@
 import { Command } from 'commander';
-import { toCamelCase } from '../../utils/camel-case';
+import inquirer from 'inquirer';
+import path from 'path';
+
 import { createDirectory, createModulePath } from '../../utils/directory';
-import { createExportFile, createFile } from '../../utils/file';
-import { getFromTemplate } from '../../utils/template';
+import { createExportFile } from '../../utils/file';
+
 import { toHyphen } from '../../utils/to-hyphen';
+import { createRecoilStore } from './recoil/create-store-recoil';
+import { createZustandStore } from './zustand/create-store-zustand';
+
+type StoreLibs = 'zustand' | 'redux' | 'recoil';
+export interface CreateStoreOptions {
+  force?: boolean;
+  lib?: StoreLibs;
+}
+
+type CreateStoreFn =
+  | undefined
+  | ((
+      srcPath: string,
+      storePath: string,
+      store: string,
+      options: CreateStoreOptions,
+    ) => Promise<void>);
+
+const createStoreMap: Record<string, CreateStoreFn> = {
+  zustand: createZustandStore,
+  recoil: createRecoilStore,
+};
 
 export const createStoreAction =
   (program: Command) =>
-  async (moduleName: string, storeName: string, options: any) => {
+  async (
+    moduleName: string,
+    storeName: string,
+    options: CreateStoreOptions,
+  ) => {
+    const answers = await inquirer.prompt<{ lib: StoreLibs }>(
+      [
+        {
+          type: 'list',
+          name: 'lib',
+          message: 'Domain Type',
+          choices: [
+            { checked: true, name: 'Zustand', value: 'zustand' },
+            { checked: false, name: 'Recoil', value: 'recoil' },
+            { checked: false, name: 'Redux', value: 'redux' },
+          ],
+        },
+      ],
+      options,
+    );
+
     const storePath = createDirectory([
       createModulePath(program, moduleName),
       'store',
@@ -15,15 +59,16 @@ export const createStoreAction =
 
     const store = toHyphen(storeName);
 
-    await createFile(
-      storePath,
-      `${store}.store.ts`,
-      getFromTemplate([__dirname, 'create-store.tpl'], {
-        store: toCamelCase(store),
-        lStore: toCamelCase(store, false),
-      }),
-      options?.force === true,
-    );
+    const create = createStoreMap[answers.lib];
+
+    if (!create) {
+      console.warn(`${answers.lib} isn't available yet!`);
+      return;
+    }
+
+    const srcPath = path.join(process.cwd(), program.opts().destination);
+
+    await create(srcPath, storePath, store, options);
 
     await createExportFile(storePath); // export store
   };

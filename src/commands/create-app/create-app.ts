@@ -6,7 +6,9 @@ import path from 'path';
 
 import fs from 'fs';
 import fsExtra from 'fs-extra';
+import inquirer from 'inquirer';
 import { toHyphen } from '../../utils/to-hyphen';
+import { StoreLibs } from '../store/create-store';
 
 interface ExecError {
   stderr: string;
@@ -46,8 +48,37 @@ export const createAppAction =
   (program: Command) =>
   async (
     appName: string,
-    options: { useNpm?: boolean; copyOnly?: boolean },
+    options: { useNpm?: boolean; copyOnly?: boolean; stateLib: StoreLibs },
   ): Promise<void> => {
+    const answers = await inquirer.prompt<{
+      useNpm?: boolean;
+      copyOnly?: boolean;
+      stateLib: StoreLibs;
+    }>(
+      [
+        {
+          type: 'list',
+          name: 'useNpm',
+          message: 'Choose a package manager',
+          choices: [
+            { checked: true, name: 'Yarn', value: false },
+            { checked: false, name: 'NPM', value: true },
+          ],
+        },
+        {
+          type: 'list',
+          name: 'stateLib',
+          message: 'Choose state library',
+          choices: [
+            { checked: true, name: 'Zustand', value: 'zustand' },
+            { checked: false, name: 'Recoil', value: 'recoil' },
+            { checked: false, name: 'Redux', value: 'redux', disabled: true },
+          ],
+        },
+      ],
+      options,
+    );
+
     const app = toHyphen(appName);
 
     const devDeps = [
@@ -66,14 +97,24 @@ export const createAppAction =
       'node-sass',
       'react-hook-form',
       'react-router-dom',
-      'zustand',
     ];
+
+    switch (answers.stateLib) {
+      case 'recoil':
+        prodDeps.push('recoil');
+        devDeps.push('@types/recoil');
+        break;
+      case 'zustand':
+        prodDeps.push('zustand');
+        break;
+      default:
+        break;
+    }
 
     try {
       const templatePath = path.join(__dirname, '../../../template');
       const appDir = path.join(process.cwd(), app);
       const srcDir = path.join(appDir, 'src');
-      const isWindows = process.platform === 'win32';
 
       console.warn('🏁 Creating app...');
       const copyTemplateCommands = [
@@ -93,6 +134,15 @@ export const createAppAction =
           cwd: appDir,
         },
       ];
+
+      if (answers.stateLib === 'recoil') {
+        copyTemplateCommands.push({
+          commandFn: () => fsExtra.remove(path.join(srcDir, 'store')),
+          command: 'Remove src/store directory.',
+          message: 'src/store directory removed!',
+          cwd: appDir,
+        });
+      }
 
       const { copyOnly, useNpm } = options;
 

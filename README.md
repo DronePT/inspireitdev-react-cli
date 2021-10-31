@@ -3,17 +3,24 @@
 This tool was done to help create React resources for Inspire IT React Boilerplate.
 
 ### Requirements
-  - [Yarn](https://yarnpkg.com/) installed
+  - Node
+  - [Yarn](https://yarnpkg.com/) or NPM
 
 ## Install:
-`npm install -g @inspireitdev/react-cli`
+```bash
+yarn global add @inspireitdev/react-cli
+```
+or
+```bash
+npm install -g @inspireitdev/react-cli
+```
 
 ## Commands:
 `inspire-react --help`
 
 #### Create a new React App:
 `inspire-react create-app <app-name>`
-ca
+
 ## TODO
 
 - [X] Add option to choose between `yarn`or `npm`

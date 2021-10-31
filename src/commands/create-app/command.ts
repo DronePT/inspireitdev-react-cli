@@ -7,5 +7,6 @@ export const install = (program: Command) => {
     .argument('<app-name>', 'React Application name.')
     .option('-c --copy-only', 'Copy template files only.')
     .option('--use-npm', 'Use NPM instead of Yarn.')
+    .option('-s --state-lib', 'State library.')
     .action(createAppAction(program));
 };

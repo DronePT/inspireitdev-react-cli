@@ -9,7 +9,7 @@ import { toHyphen } from '../../utils/to-hyphen';
 import { createRecoilStore } from './recoil/create-store-recoil';
 import { createZustandStore } from './zustand/create-store-zustand';
 
-type StoreLibs = 'zustand' | 'redux' | 'recoil';
+export type StoreLibs = 'zustand' | 'redux' | 'recoil';
 export interface CreateStoreOptions {
   force?: boolean;
   lib?: StoreLibs;
@@ -41,11 +41,11 @@ export const createStoreAction =
         {
           type: 'list',
           name: 'lib',
-          message: 'Domain Type',
+          message: 'Choose state library',
           choices: [
             { checked: true, name: 'Zustand', value: 'zustand' },
             { checked: false, name: 'Recoil', value: 'recoil' },
-            { checked: false, name: 'Redux', value: 'redux' },
+            { checked: false, name: 'Redux', value: 'redux', disabled: true },
           ],
         },
       ],

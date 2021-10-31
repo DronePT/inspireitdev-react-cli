@@ -116,6 +116,35 @@ export const createAppAction =
       const appDir = path.join(process.cwd(), app);
       const srcDir = path.join(appDir, 'src');
 
+      if (await fsExtra.pathExists(appDir)) {
+        const overwriteAnswer = await inquirer.prompt([
+          {
+            type: 'confirm',
+            message: `'${appDir}' already exists, overwrite it?`,
+            name: 'overwrite',
+            default: false,
+            choices: [
+              {
+                key: 'y',
+                name: 'Overwrite',
+                value: 'overwrite',
+              },
+              {
+                key: 'n',
+                name: 'Cancel',
+                value: 'cancel',
+              },
+            ],
+          },
+        ]);
+
+        if (!overwriteAnswer.overwrite) return;
+
+        console.warn(`🗑  Removing ${appDir}`);
+
+        await fsExtra.remove(appDir);
+      }
+
       console.warn('🏁 Creating app...');
       const copyTemplateCommands = [
         {

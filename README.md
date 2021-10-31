@@ -24,6 +24,6 @@ npm install -g @inspireitdev/react-cli
 ## TODO
 
 - [X] Add option to choose between `yarn`or `npm`
-- [ ] Detect if application directory already exists when executing `create-app`
+- [X] Detect if application directory already exists when executing `create-app`
 - [ ] Automatically add to route configuration when creating a page.
 - [ ] Add new command to uninstall TailwindCSS

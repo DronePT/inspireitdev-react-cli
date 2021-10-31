@@ -116,7 +116,7 @@ export const createAppAction =
       const appDir = path.join(process.cwd(), app);
       const srcDir = path.join(appDir, 'src');
 
-      if (await fsExtra.pathExists(appDir)) {
+      if (!options.copyOnly && (await fsExtra.pathExists(appDir))) {
         const overwriteAnswer = await inquirer.prompt([
           {
             type: 'confirm',

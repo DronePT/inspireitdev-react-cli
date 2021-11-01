@@ -1,14 +1,11 @@
 import { RouteEntry, buildRouterConfiguration } from './core';
+import { HomePage } from './modules';
 
 export const router: RouteEntry[] = [
   {
     path: '/',
     exact: true,
-    component: (): JSX.Element => (
-      <div className="flex items-center justify-center w-screen h-screen">
-        <h1>InspireIT React</h1>
-      </div>
-    ),
+    component: HomePage,
   },
 ];
 

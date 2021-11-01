@@ -66,7 +66,7 @@ export async function createZustandStore(
         )
           .map((r: string) => r.trim())
           .filter((r) => !!r)
-          .join('),\n  ')}\n${g4}`,
+          .join('),\n  ')}),\n${g4}`,
     );
 
   await fsExtra.writeFileSync(appStorePath, newAppStore);

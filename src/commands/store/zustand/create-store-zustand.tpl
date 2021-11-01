@@ -1,10 +1,10 @@
 import { GetState, SetState } from 'zustand';
 
-interface {{store}}State {
+interface {{store}}Slice {
   {{lStore}}: any
 }
 
-export const create{{store}}Store = (
+export const create{{store}}Slice = (
   set: SetState<{{store}}State>,
   get: GetState<{{store}}State>
 ): {{store}}State => {

@@ -10,4 +10,4 @@ type StateFromFunctions<T extends [...any]> = T extends [infer F, ...infer R]
 
 export type AppState = StateFromFunctions<[]>;
 
-export const useStore = createStore<AppState>((set, get) => ({}));
+export const useStore = createStore((set, get) => ({}));

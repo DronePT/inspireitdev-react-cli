@@ -30,11 +30,11 @@ export async function createZustandStore(
   const appStore = (await fsExtra.readFileSync(appStorePath)).toString();
 
   // store: read current stores
-  const createStoreName = `create${toCamelCase(store)}Store`;
+  const createStoreName = `create${toCamelCase(store)}Slice`;
   const reStores = /(import {)([^]{0,})(} from ['|"]..\/modules['|"])/gi;
   const reState = /(StateFromFunctions<\[)([^]{0,})(\]>)/gi;
   const reExport =
-    /(createStore<AppState>\(\(set, get\) => \({)([^]{0,})(}\))/gi;
+    /(createStore(<AppState>){0,}\(\(set, get\) => \({)([^]{0,})(}\))/gi;
 
   const newAppStore = appStore
     .replace(
@@ -60,13 +60,13 @@ export async function createZustandStore(
     )
     .replace(
       reExport,
-      (v, g1, g2, g3) =>
-        `${g1}\n  ${Array.from(
-          new Set([...g2.split('),'), `...${createStoreName}(set, get`]),
+      (v, g1, g2, g3, g4) =>
+        `createStore<AppState>((set, get) => ({\n  ${Array.from(
+          new Set([...g3.split('),'), `...${createStoreName}(set, get`]),
         )
           .map((r: string) => r.trim())
           .filter((r) => !!r)
-          .join('),\n  ')}\n${g3}`,
+          .join('),\n  ')}\n${g4}`,
     );
 
   await fsExtra.writeFileSync(appStorePath, newAppStore);

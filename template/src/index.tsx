@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { routerConfiguration } from './router-configuration';
 
 import './store';
-import './index.css';
+
+import { routerConfiguration } from './router-configuration';
 import { AppRouter } from './core';
+
+import './index.css';
 
 ReactDOM.render(
   <React.StrictMode>

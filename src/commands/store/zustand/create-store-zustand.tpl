@@ -5,13 +5,10 @@ interface {{store}}Slice {
   set{{store}}: ({{lStore}}: any) => void;
 }
 
-export const create{{store}}Slice = (
-  set: SetState<{{store}}Slice>,
-  get: GetState<{{store}}Slice>
-): {{store}}Slice => {
+export const create{{store}}Slice = (set: any,  get: any): {{store}}Slice => {
   return {
     {{lStore}}: null,
     set{{store}}: ({{lStore}}: any) =>
-      set((state) => void (state.{{lStore}} = {{lStore}})),
+      set((state: {{store}}Slice) => void (state.{{lStore}} = {{lStore}})),
   };
 };

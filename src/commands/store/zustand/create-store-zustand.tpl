@@ -1,5 +1,3 @@
-import { GetState, SetState } from 'zustand';
-
 interface {{store}}Slice {
   {{lStore}}: any;
   set{{store}}: ({{lStore}}: any) => void;

@@ -1,9 +1,8 @@
 import { useContext } from 'react';
-import { Switch, Route } from 'react-router-dom';
-
-import { RouteEntry } from '../../utils';
+import { useRoutes } from 'react-router-dom';
 import { RouterContext } from '../../contexts';
-import { createPrivateRoute } from '../PrivateRoute';
+
+import { buildRouterConfiguration, RouteEntry } from '../../utils';
 
 interface AppRouterProps {
   routes: RouteEntry[];
@@ -15,41 +14,23 @@ export const RouterMap = ({
   routes,
   catchNotFound = true,
   notFoundComponent: NotFound,
-}: AppRouterProps): JSX.Element => {
-  const { checkLoginStatus, unauthorizedRedirectTo } =
+}: AppRouterProps): JSX.Element | null => {
+  const { checkLoginStatus = () => true, unauthorizedRedirectTo } =
     useContext(RouterContext);
 
-  const PrivateRoute = createPrivateRoute({
-    checkLoginStatus: checkLoginStatus || (() => false),
-    defaultUnauthorizedRedirectTo: unauthorizedRedirectTo || '/',
+  const routesMapping = buildRouterConfiguration(routes, {
+    checkLoginStatus,
+    unauthorizedRedirectTo,
   });
 
-  return (
-    <Switch>
-      {routes.map((route) => {
-        const RouteComponent =
-          !!checkLoginStatus && route.requiresAuth ? PrivateRoute : Route;
+  if (catchNotFound) {
+    routesMapping.push({
+      path: '*',
+      element: (NotFound && <NotFound />) || <h1>Page not found!</h1>,
+    });
+  }
 
-        return (
-          <RouteComponent
-            key={`route-${route.path}`}
-            path={route.path}
-            exact={route.exact}
-            unauthorizedRedirectTo={route.unauthorizedRedirectTo}
-            component={route.component}
-          />
-        );
-      })}
-      {catchNotFound && (
-        <Route
-          path="*"
-          render={() => {
-            if (!NotFound) return <h2>Oops! 404 not found.</h2>;
+  const element = useRoutes(routesMapping);
 
-            return <NotFound />;
-          }}
-        />
-      )}
-    </Switch>
-  );
+  return element;
 };

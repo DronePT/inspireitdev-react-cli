@@ -1,47 +1,25 @@
-import { Route, Redirect } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 interface PrivateRouteProps {
-  component?: React.ComponentClass | React.FunctionComponent;
-  unauthorizedRedirectTo?: string;
-}
-
-interface CreatePrivateRouteParams {
   checkLoginStatus: () => boolean;
-  defaultUnauthorizedRedirectTo: string;
+  unauthorizedRedirectTo: string;
+  children: React.ReactElement | null;
 }
 
-export const createPrivateRoute =
-  ({
-    checkLoginStatus,
-    defaultUnauthorizedRedirectTo,
-  }: CreatePrivateRouteParams) =>
-  ({
-    component: Component,
-    unauthorizedRedirectTo,
-    ...rest
-  }: PrivateRouteProps) => {
-    const isLogged = checkLoginStatus();
+const Redirect = ({ to }: { to: string }) => {
+  const location = useLocation();
 
-    if (!Component) return null;
+  return <Navigate to={to} state={{ from: location }} />;
+};
 
-    return (
-      <Route
-        {...rest}
-        render={(props) => {
-          if (!isLogged) {
-            return (
-              <Redirect
-                to={{
-                  pathname:
-                    unauthorizedRedirectTo || defaultUnauthorizedRedirectTo,
-                  state: { from: props.location },
-                }}
-              />
-            );
-          }
+export const PrivateRoute = ({
+  children,
+  checkLoginStatus,
+  unauthorizedRedirectTo,
+}: PrivateRouteProps): JSX.Element => {
+  const isLogged = (checkLoginStatus && checkLoginStatus()) || false;
 
-          return <Component />;
-        }}
-      />
-    );
-  };
+  if (!children) return <div />;
+
+  return !isLogged ? <Redirect to={unauthorizedRedirectTo} /> : children;
+};

@@ -88,7 +88,6 @@ export const createAppAction =
       'autoprefixer@^9',
       '@inspireitdev/react-cli',
       '@types/react-router',
-      '@types/react-router-dom',
     ];
     const prodDeps = [
       '@craco/craco',
@@ -96,7 +95,7 @@ export const createAppAction =
       'fast-deep-equal',
       'node-sass',
       'react-hook-form',
-      'react-router-dom',
+      'react-router-dom@6',
     ];
 
     switch (answers.stateLib) {

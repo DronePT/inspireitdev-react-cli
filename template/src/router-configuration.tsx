@@ -1,12 +1,9 @@
-import { RouteEntry, buildRouterConfiguration } from './core';
+import { RouteEntry } from './core';
 import { HomePage } from './modules';
 
-export const router: RouteEntry[] = [
+export const routerConfiguration: RouteEntry[] = [
   {
     path: '/',
-    exact: true,
     component: HomePage,
   },
 ];
-
-export const routerConfiguration = buildRouterConfiguration(router);

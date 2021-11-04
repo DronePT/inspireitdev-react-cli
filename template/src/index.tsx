@@ -1,19 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router } from 'react-router-dom';
 
 import './store';
+import './style.css';
 
+import { RouterMap, RouterProvider } from './core';
 import { routerConfiguration } from './router-configuration';
-import { AppRouter } from './core';
-
-import './index.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
-      <AppRouter routes={routerConfiguration} />
-    </Router>
+    <RouterProvider>
+      <RouterMap routes={routerConfiguration} />
+    </RouterProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 );

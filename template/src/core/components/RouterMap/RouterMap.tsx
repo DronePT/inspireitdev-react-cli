@@ -1,22 +1,26 @@
+import { useContext } from 'react';
 import { Switch, Route } from 'react-router-dom';
-import { RouteEntry } from '../..';
+
+import { RouteEntry } from '../../utils';
+import { RouterContext } from '../../contexts';
 import { createPrivateRoute } from '../PrivateRoute';
 
 interface AppRouterProps {
   routes: RouteEntry[];
-  checkLoginStatus?: () => boolean;
-  unauthorizedRedirectTo?: string;
+  catchNotFound?: boolean;
   notFoundComponent?: React.ComponentClass | React.FunctionComponent;
 }
 
-export const AppRouter = ({
+export const RouterMap = ({
   routes,
+  catchNotFound = true,
   notFoundComponent: NotFound,
-  checkLoginStatus,
-  unauthorizedRedirectTo,
 }: AppRouterProps): JSX.Element => {
+  const { checkLoginStatus, unauthorizedRedirectTo } =
+    useContext(RouterContext);
+
   const PrivateRoute = createPrivateRoute({
-    checkLoginStatus: !!checkLoginStatus ? checkLoginStatus : () => false,
+    checkLoginStatus: checkLoginStatus || (() => false),
     defaultUnauthorizedRedirectTo: unauthorizedRedirectTo || '/',
   });
 
@@ -36,14 +40,16 @@ export const AppRouter = ({
           />
         );
       })}
-      <Route
-        path='*'
-        render={() => {
-          if (!NotFound) return <h2>Oops! 404 not found.</h2>;
+      {catchNotFound && (
+        <Route
+          path="*"
+          render={() => {
+            if (!NotFound) return <h2>Oops! 404 not found.</h2>;
 
-          return <NotFound />;
-        }}
-      />
+            return <NotFound />;
+          }}
+        />
+      )}
     </Switch>
   );
 };

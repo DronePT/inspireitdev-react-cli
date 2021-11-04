@@ -18,6 +18,6 @@ export abstract class ValueObject<S> {
   }
 
   equals(e: ValueObject<S>) {
-    return equal(this, e);
+    return equal(this.state, e.state);
   }
 }

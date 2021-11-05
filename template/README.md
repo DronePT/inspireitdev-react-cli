@@ -111,7 +111,7 @@ interface RouteEntry {
 ### Documentation for libraries in use
 
 - [React TypeScript Cheat sheet](https://github.com/typescript-cheatsheets/react#reacttypescript-cheatsheets)
-- [react-router-dom](https://reactrouter.com/web/guides/quick-start) - Routing management
+- [react-router-dom](https://reactrouter.com/docs/en/v6) - Routing management
 - [Zustand](https://www.npmjs.com/package/zustand) - State management
 - [react-hook-form](hhttps://react-hook-form.com/get-started) - Forms validation
 - [TailwindCSS](https://tailwindcss.com/docs) - CSS utility

@@ -7,31 +7,28 @@ export const install = (program: Command) => {
     .command('component')
     .argument('<module-or-component>', 'Module name or component name')
     .argument('[component-name]', 'Name of the component to create')
-    .argument(
-      '[directory]',
-      'Custom location to create this component (relative to module path)',
-    )
     .option('-f --force', 'Overwrite any existing file.')
     .action(
       (
         componentOrModule: string,
         component: string,
-        customDirectory: string,
         options: Record<string, unknown>,
       ) => {
+        const opts = {
+          ...program.opts<{ destination: string }>(),
+          ...options,
+          customDirectory: componentOrModule.includes('/'),
+        };
+
         if (!component) {
-          return createSharedComponent(componentOrModule, {
-            ...program.opts(),
-            ...options,
-          });
+          return createSharedComponent(componentOrModule, opts);
         }
 
         return createComponentAction(
           program,
           componentOrModule,
           component,
-          customDirectory,
-          options,
+          opts,
         );
       },
     );

@@ -10,16 +10,13 @@ export const createComponentAction = async (
   program: Command,
   moduleName: string,
   componentName: string,
-  otherDir: string,
-  options: any,
+  options: { customDirectory: boolean; force?: boolean },
 ) => {
   const component = toCamelCase(componentName, true);
 
-  let modulePath = createModulePath(program, moduleName);
-
-  if (otherDir) {
-    modulePath = path.join(modulePath, otherDir);
-  }
+  const modulePath = options.customDirectory
+    ? createDirectory(moduleName.split('/'))
+    : createModulePath(program, moduleName);
 
   const componentPath = createDirectory([modulePath, 'components', component]);
 

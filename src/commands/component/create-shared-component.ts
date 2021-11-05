@@ -6,6 +6,7 @@ import { getFromTemplate } from '../../utils/template';
 interface CreateSharedComponentOptions {
   force?: boolean;
   destination: string;
+  customDirectory?: boolean;
 }
 
 export const createSharedComponent = async (

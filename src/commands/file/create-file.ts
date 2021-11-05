@@ -18,9 +18,9 @@ export const createFileAction =
     const newFileName = toHyphen(filename);
 
     await createFile(
-      filePath,
+      filePath.data,
       `${newFileName}${ext}`,
       '\n',
       options?.force === true,
-    );
+    ).exec();
   };

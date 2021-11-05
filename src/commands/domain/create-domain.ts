@@ -3,6 +3,7 @@ import inquirer from 'inquirer';
 import { toCamelCase } from '../../utils/camel-case';
 import { createDirectory, createModulePath } from '../../utils/directory';
 import { createExportFile, createFile } from '../../utils/file';
+import { Tasks } from '../../utils/tasks';
 import { getFromTemplate } from '../../utils/template';
 import { toHyphen } from '../../utils/to-hyphen';
 
@@ -17,12 +18,25 @@ export const createDomainAction =
     moduleName: string,
     domainName: string,
     domainType: string,
-    options: any,
+    options: { force?: boolean },
   ) => {
-    const domainPath = createDirectory([
-      createModulePath(program, moduleName),
-      'domain',
-    ]);
+    const opts = {
+      ...program.opts<{ destination: string }>(),
+      ...options,
+      customDirectory: moduleName.includes('/'),
+    };
+
+    const tasks = Tasks.create();
+
+    const modulePath = opts.customDirectory
+      ? createDirectory(moduleName.split('/'))
+      : createModulePath(program, moduleName);
+
+    tasks.add('create-path', modulePath.data, modulePath.exec);
+
+    const domainPath = createDirectory([modulePath.data, 'domain']);
+
+    tasks.add('create-path', domainPath.data, domainPath.exec);
 
     let answers = await inquirer.prompt<{ type: string }>(
       [
@@ -56,15 +70,19 @@ export const createDomainAction =
     const template =
       templates[typeCamelCase.toLowerCase()] || 'create-domain.tpl';
 
-    await createFile(
-      domainPath,
+    const fileToCreate = createFile(
+      domainPath.data,
       `${name}.${type}.ts`,
       getFromTemplate([__dirname, template], {
         domain: toCamelCase(name),
         type: typeCamelCase,
       }),
-      options?.force === true,
+      opts?.force === true,
     );
 
-    await createExportFile(domainPath); // export domain
+    tasks.add('create-file', fileToCreate.data, fileToCreate.exec);
+
+    if (await tasks.run()) {
+      await createExportFile(domainPath.data); // export domain
+    }
   };

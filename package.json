@@ -1,6 +1,6 @@
 {
   "name": "@inspireitdev/react-cli",
-  "version": "1.0.33",
+  "version": "1.0.34",
   "description": "CLI tool to help create React resources.",
   "license": "MIT",
   "author": "André Alves <dronept@gmail.com>",

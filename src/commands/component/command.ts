@@ -5,7 +5,23 @@ import { createSharedComponent } from './create-shared-component';
 export const install = (program: Command) => {
   program
     .command('component')
-    .argument('<module-or-component>', 'Module name or component name')
+    .addHelpText(
+      'after',
+      `
+Example 1: Create inside a module
+inspire-react component auth login-form
+
+Example 2: Create a shared component
+inspire-react component text-field
+
+Example 2: Create a component on a custom directory
+inspire-react component src/auth/LoginForm header
+    `,
+    )
+    .argument(
+      '<module-or-component-or-path>',
+      'Module name, shared component name or a custom path.',
+    )
     .argument('[component-name]', 'Name of the component to create')
     .option('-f --force', 'Overwrite any existing file.')
     .action(

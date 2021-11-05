@@ -22,11 +22,11 @@ export const createSharedComponent = async (
   ]);
 
   await createFile(
-    componentPath,
+    componentPath.data,
     `${component}.tsx`,
     getFromTemplate([__dirname, 'create-component.tpl'], { component }),
     options?.force === true,
   );
 
-  await createExportFile(componentPath, 'components'); // export file
+  await createExportFile(componentPath.data, 'components'); // export file
 };

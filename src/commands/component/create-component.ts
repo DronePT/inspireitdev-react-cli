@@ -4,6 +4,7 @@ import path from 'path';
 import { toCamelCase } from '../../utils/camel-case';
 import { createDirectory, createModulePath } from '../../utils/directory';
 import { createExportFile, createFile } from '../../utils/file';
+import { Tasks } from '../../utils/tasks';
 import { getFromTemplate } from '../../utils/template';
 
 export const createComponentAction = async (
@@ -12,20 +13,38 @@ export const createComponentAction = async (
   componentName: string,
   options: { customDirectory: boolean; force?: boolean },
 ) => {
+  const tasks = Tasks.create();
+
   const component = toCamelCase(componentName, true);
 
-  const modulePath = options.customDirectory
+  const createModuleDirectory = options.customDirectory
     ? createDirectory(moduleName.split('/'))
     : createModulePath(program, moduleName);
 
-  const componentPath = createDirectory([modulePath, 'components', component]);
+  tasks.add(
+    'create-path',
+    createModuleDirectory.data,
+    createModuleDirectory.exec,
+  );
 
-  await createFile(
-    componentPath,
+  const componentPath = createDirectory([
+    createModuleDirectory.data,
+    'components',
+    component,
+  ]);
+
+  tasks.add('create-path', componentPath.data, componentPath.exec);
+
+  const createComponent = createFile(
+    componentPath.data,
     `${component}.tsx`,
     getFromTemplate([__dirname, 'create-component.tpl'], { component }),
     options?.force === true,
   );
 
-  await createExportFile(componentPath); // export file
+  tasks.add('create-file', createComponent.data, createComponent.exec);
+
+  if (await tasks.run()) {
+    await createExportFile(componentPath.data); // export file
+  }
 };

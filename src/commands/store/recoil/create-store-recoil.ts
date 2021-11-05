@@ -1,5 +1,6 @@
 import { toCamelCase } from '../../../utils/camel-case';
 import { createFile } from '../../../utils/file';
+import { Tasks } from '../../../utils/tasks';
 import { getFromTemplate } from '../../../utils/template';
 import { CreateStoreOptions } from '../create-store';
 
@@ -8,8 +9,9 @@ export async function createRecoilStore(
   storePath: string,
   store: string,
   options: CreateStoreOptions,
+  tasks: Tasks,
 ) {
-  await createFile(
+  const f = createFile(
     storePath,
     `${store}.store.ts`,
     getFromTemplate([__dirname, 'create-store-recoil.tpl'], {
@@ -18,4 +20,6 @@ export async function createRecoilStore(
     }),
     options?.force === true,
   );
+
+  tasks.add('create-file', f.data, f.exec);
 }

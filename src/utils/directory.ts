@@ -9,14 +9,16 @@ export const createDirectory = (dirPath: string[]) => {
     : [process.cwd(), ...dirPath];
 
   const p = path.join(...pathToCreate);
-  mkdirp.sync(p);
-  return p;
+
+  return {
+    data: p,
+    exec: () => {
+      mkdirp.sync(p);
+    },
+  };
 };
 
-export const createModulePath = (
-  program: Command,
-  moduleName: string,
-): string =>
+export const createModulePath = (program: Command, moduleName: string) =>
   createDirectory([
     program.opts().destination,
     'modules',

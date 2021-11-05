@@ -16,44 +16,52 @@ const fileExists = (fp: string): boolean => {
   }
 };
 
-export const createFile = async (
+export const createFile = (
   filepath: string,
   filename: string,
   content: string,
   overwrite = false,
-): Promise<void> => {
+) => {
   const resolvedFilePath = path.join(filepath, filename);
 
-  if (!overwrite && fileExists(resolvedFilePath)) {
-    const answers = await inquirer.prompt([
-      {
-        type: 'confirm',
-        message: `Conflict on file '${resolvedFilePath}', overwrite?`,
-        name: 'overwrite',
-        default: false,
-        choices: [
-          {
-            key: 'y',
-            name: 'Overwrite',
-            value: 'overwrite',
-          },
-          {
-            key: 'n',
-            name: 'Cancel',
-            value: 'cancel',
-          },
-        ],
-      },
-    ]);
+  const exec = async (ow = overwrite) => {
+    if (!ow && fileExists(resolvedFilePath)) {
+      const answers = await inquirer.prompt([
+        {
+          type: 'confirm',
+          message: `Conflict on file '${resolvedFilePath}', overwrite?`,
+          name: 'overwrite',
+          default: false,
+          choices: [
+            {
+              key: 'y',
+              name: 'Overwrite',
+              value: 'overwrite',
+            },
+            {
+              key: 'n',
+              name: 'Cancel',
+              value: 'cancel',
+            },
+          ],
+        },
+      ]);
 
-    if (answers.overwrite) {
-      await createFile(filepath, filename, content, true);
+      if (answers.overwrite) {
+        await exec(true);
+      }
+      return;
     }
-    return;
-  }
 
-  fs.writeFileSync(path.join(filepath, filename), content);
+    fs.writeFileSync(resolvedFilePath, content);
+  };
+
+  return {
+    data: resolvedFilePath,
+    exec,
+  };
 };
+
 export const createExportFile = async (
   filepath: string | string[],
   recursiveUntilPath = 'modules',
@@ -79,7 +87,7 @@ export const createExportFile = async (
 
   const content = filesAndDirs.map((f) => f.value).join('\n');
 
-  await createFile(dir, 'index.ts', `${content}\n`, true);
+  await createFile(dir, 'index.ts', `${content}\n`, true).exec();
 
   const newDir = path.join(dir, '..');
 

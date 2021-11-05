@@ -4,6 +4,7 @@ import path from 'path';
 
 import { createDirectory, createModulePath } from '../../utils/directory';
 import { createExportFile } from '../../utils/file';
+import { Tasks } from '../../utils/tasks';
 
 import { toHyphen } from '../../utils/to-hyphen';
 import { createRecoilStore } from './recoil/create-store-recoil';
@@ -22,6 +23,7 @@ type CreateStoreFn =
       storePath: string,
       store: string,
       options: CreateStoreOptions,
+      task: Tasks,
     ) => Promise<void>);
 
 const createStoreMap: Record<string, CreateStoreFn> = {
@@ -52,10 +54,23 @@ export const createStoreAction =
       options,
     );
 
-    const storePath = createDirectory([
-      createModulePath(program, moduleName),
-      'store',
-    ]);
+    const opts = {
+      ...program.opts<{ destination: string }>(),
+      ...options,
+      customDirectory: moduleName.includes('/'),
+    };
+
+    const tasks = Tasks.create();
+
+    const modulePath = opts.customDirectory
+      ? createDirectory(moduleName.split('/'))
+      : createModulePath(program, moduleName);
+
+    tasks.add('create-path', modulePath.data, modulePath.exec);
+
+    const storePath = createDirectory([modulePath.data, 'store']);
+
+    tasks.add('create-path', storePath.data, storePath.exec);
 
     const store = toHyphen(storeName);
 
@@ -68,7 +83,9 @@ export const createStoreAction =
 
     const srcPath = path.join(process.cwd(), program.opts().destination);
 
-    await create(srcPath, storePath, store, options);
+    await create(srcPath, storePath.data, store, options, tasks);
 
-    await createExportFile(storePath); // export store
+    if (await tasks.run()) {
+      await createExportFile(storePath.data); // export store
+    }
   };

@@ -8,14 +8,16 @@ import { toCamelCase } from '../../../utils/camel-case';
 import { createFile } from '../../../utils/file';
 import { getFromTemplate } from '../../../utils/template';
 import { CreateStoreOptions } from '../create-store';
+import { Tasks } from '../../../utils/tasks';
 
 export async function createZustandStore(
   srcPath: string,
   storePath: string,
   store: string,
   options: CreateStoreOptions,
+  task: Tasks,
 ) {
-  await createFile(
+  const fileToCreate = createFile(
     storePath,
     `${store}.store.ts`,
     getFromTemplate([__dirname, 'create-store-zustand.tpl'], {
@@ -24,6 +26,8 @@ export async function createZustandStore(
     }),
     options?.force === true,
   );
+
+  task.add('create-file', fileToCreate.data, fileToCreate.exec);
 
   const appStorePath = path.join(srcPath, 'store/store.ts');
 
@@ -69,5 +73,7 @@ export async function createZustandStore(
           .join('),\n  ')}),\n${g4}`,
     );
 
-  await fsExtra.writeFileSync(appStorePath, newAppStore);
+  task.add('update', appStorePath, () =>
+    fsExtra.writeFileSync(appStorePath, newAppStore),
+  );
 }

@@ -34,9 +34,7 @@ const replacePackageJsonScripts = (appDir: string) => {
   const packagePath = path.join(appDir, 'package.json');
   const packageJSON = JSON.parse(fs.readFileSync(packagePath).toString());
   packageJSON.scripts = {
-    start: 'craco start',
-    build: 'craco build',
-    test: 'craco test',
+    ...packageJSON.scripts,
     eject: 'react-scripts eject',
     cli: 'inspire-react',
   };
@@ -83,14 +81,14 @@ export const createAppAction =
 
     const devDeps = [
       '@types/react-dom',
-      'tailwindcss@npm:@tailwindcss/postcss7-compat',
-      'postcss@^7',
-      'autoprefixer@^9',
+      'tailwindcss',
+      'postcss',
+      'autoprefixer',
       '@inspireitdev/react-cli',
       '@types/react-router',
     ];
+
     const prodDeps = [
-      '@craco/craco',
       'clsx',
       'fast-deep-equal',
       'node-sass',
@@ -159,6 +157,11 @@ export const createAppAction =
             }),
           command: 'Copying InspireIT React template files.',
           message: 'InspireIT React files copied to app folder!',
+          cwd: appDir,
+        },
+        {
+          command: 'npx tailwindcss init',
+          message: 'Initializing TailwindCSS!',
           cwd: appDir,
         },
       ];

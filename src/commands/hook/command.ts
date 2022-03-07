@@ -1,4 +1,5 @@
 import { Command } from 'commander';
+import path from 'path';
 import { createHookAction } from './create-hook';
 import { createSharedHookAction } from './create-shared-hook';
 
@@ -33,7 +34,7 @@ inspire-react hook src/custom/path key-press
         const opts = {
           ...program.opts<{ destination: string }>(),
           ...options,
-          customDirectory: moduleName.includes('/'),
+          customDirectory: moduleName.includes(path.sep),
         };
 
         if (!hookName) {

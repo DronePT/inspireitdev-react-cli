@@ -26,7 +26,7 @@ export const createUtilAction =
       );
     }
 
-    const utilBasePath = utilNameOrPath.split('/');
+    const utilBasePath = utilNameOrPath.split(path.sep);
 
     const utilPath = createDirectory([...utilBasePath, 'utils']);
     tasks.add('create-path', utilPath.data, utilPath.exec);

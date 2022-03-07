@@ -57,13 +57,13 @@ export const createStoreAction =
     const opts = {
       ...program.opts<{ destination: string }>(),
       ...options,
-      customDirectory: moduleName.includes('/'),
+      customDirectory: moduleName.includes(path.sep),
     };
 
     const tasks = Tasks.create();
 
     const modulePath = opts.customDirectory
-      ? createDirectory(moduleName.split('/'))
+      ? createDirectory(moduleName.split(path.sep))
       : createModulePath(program, moduleName);
 
     tasks.add('create-path', modulePath.data, modulePath.exec);

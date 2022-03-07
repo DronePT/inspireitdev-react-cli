@@ -212,7 +212,7 @@ export const createAppAction = async (
       stepWrite(step.message);
     }
 
-    replacePackageJsonScripts(app);
+    if (!copyOnly) replacePackageJsonScripts(app);
 
     console.log('Done! 🎉');
   } catch (e) {

@@ -1,4 +1,5 @@
 import { Command } from 'commander';
+import path from 'path';
 
 import { toCamelCase } from '../../utils/camel-case';
 import { createDirectory, createModulePath } from '../../utils/directory';
@@ -17,7 +18,7 @@ export const createComponentAction = async (
   const component = toCamelCase(componentName, true);
 
   const createModuleDirectory = options.customDirectory
-    ? createDirectory(moduleName.split('/'))
+    ? createDirectory(moduleName.split(path.sep))
     : createModulePath(program, moduleName);
 
   tasks.add(

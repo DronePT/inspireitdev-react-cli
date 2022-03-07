@@ -1,4 +1,5 @@
 import { Command } from 'commander';
+import path from 'path';
 import { createComponentAction } from './create-component';
 import { createSharedComponent } from './create-shared-component';
 
@@ -33,7 +34,7 @@ inspire-react component src/auth/LoginForm header
         const opts = {
           ...program.opts<{ destination: string }>(),
           ...options,
-          customDirectory: componentOrModule.includes('/'),
+          customDirectory: componentOrModule.includes(path.sep),
         };
 
         if (!component) {

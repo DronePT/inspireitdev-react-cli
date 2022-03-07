@@ -1,4 +1,5 @@
 import { Command } from 'commander';
+import path from 'path';
 
 import { toCamelCase } from '../../utils/camel-case';
 import { createDirectory, createModulePath } from '../../utils/directory';
@@ -22,7 +23,7 @@ export const createHookAction = async (
   const tasks = Tasks.create();
 
   const modulePath = options.customDirectory
-    ? createDirectory(moduleName.split('/'))
+    ? createDirectory(moduleName.split(path.sep))
     : createModulePath(program, moduleName);
 
   tasks.add('create-path', modulePath.data, modulePath.exec);

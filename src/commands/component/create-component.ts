@@ -1,5 +1,4 @@
 import { Command } from 'commander';
-import path from 'path';
 
 import { toCamelCase } from '../../utils/camel-case';
 import { createDirectory, createModulePath } from '../../utils/directory';
@@ -45,6 +44,9 @@ export const createComponentAction = async (
   tasks.add('create-file', createComponent.data, createComponent.exec);
 
   if (await tasks.run()) {
-    await createExportFile(componentPath.data); // export file
+    await createExportFile(
+      componentPath.data,
+      options.customDirectory ? 'components' : undefined,
+    ); // export file
   }
 };

@@ -1,7 +1,7 @@
 import { Command } from 'commander';
-
+import path from 'path';
 import { toCamelCase } from '../../utils/camel-case';
-import { createDirectory, createModulePath } from '../../utils/directory';
+import { createDirectory } from '../../utils/directory';
 import { createExportFile, createFile } from '../../utils/file';
 import { Tasks } from '../../utils/tasks';
 import { getFromTemplate } from '../../utils/template';
@@ -13,21 +13,14 @@ interface CreateHookOptions {
   destination: string;
 }
 
-export const createHookAction = async (
+export const createSharedHookAction = async (
   program: Command,
-  moduleName: string,
   hookName: string,
   options: CreateHookOptions,
 ) => {
   const tasks = Tasks.create();
 
-  const modulePath = options.customDirectory
-    ? createDirectory(moduleName.split('/'))
-    : createModulePath(program, moduleName);
-
-  tasks.add('create-path', modulePath.data, modulePath.exec);
-
-  const hookPath = createDirectory([modulePath.data, 'hooks']);
+  const hookPath = createDirectory([options.destination, 'hooks']);
 
   tasks.add('create-path', hookPath.data, hookPath.exec);
 
@@ -45,9 +38,6 @@ export const createHookAction = async (
   tasks.add('create-file', fileToCreate.data, fileToCreate.exec);
 
   if (await tasks.run()) {
-    await createExportFile(
-      hookPath.data,
-      options.customDirectory ? 'hooks' : undefined,
-    ); // export hook
+    await createExportFile(hookPath.data, 'hooks'); // export hook
   }
 };

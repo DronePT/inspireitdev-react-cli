@@ -1,6 +1,5 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
-import { Command } from 'commander';
 import execSh from 'exec-sh';
 import path from 'path';
 

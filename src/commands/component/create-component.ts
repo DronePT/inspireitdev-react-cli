@@ -1,5 +1,6 @@
 import { Command } from 'commander';
 import path from 'path';
+import inquirer from 'inquirer';
 
 import { toCamelCase } from '../../utils/camel-case';
 import { createDirectory, createModulePath } from '../../utils/directory';
@@ -13,6 +14,15 @@ export const createComponentAction = async (
   componentName: string,
   options: { customDirectory: boolean; force?: boolean },
 ) => {
+  const { styles } = await inquirer.prompt<{ styles: boolean }>([
+    {
+      name: 'styles',
+      type: 'confirm',
+      message: 'Create styles file?',
+      default: false,
+    },
+  ]);
+
   const tasks = Tasks.create();
 
   const component = toCamelCase(componentName, true);
@@ -38,11 +48,24 @@ export const createComponentAction = async (
   const createComponent = createFile(
     componentPath.data,
     `${component}.tsx`,
-    getFromTemplate([__dirname, 'create-component.tpl'], { component }),
+    getFromTemplate([__dirname, 'create-component.tpl'], { component, styles }),
     options?.force === true,
   );
 
   tasks.add('create-file', createComponent.data, createComponent.exec);
+
+  if (styles) {
+    const createStyles = createFile(
+      componentPath.data,
+      `${component}.css`,
+      getFromTemplate([__dirname, 'create-component.styles.tpl'], {
+        component,
+      }),
+      options?.force === true,
+    );
+
+    tasks.add('create-file', createStyles.data, createStyles.exec);
+  }
 
   if (await tasks.run()) {
     await createExportFile(

@@ -2,6 +2,7 @@
 /* eslint-disable no-restricted-syntax */
 import execSh from 'exec-sh';
 import path from 'path';
+import readline from 'readline';
 
 import fs from 'fs';
 import fsExtra from 'fs-extra';
@@ -21,11 +22,20 @@ interface ShellCommand {
   cwd: string;
 }
 
+interface CreateAppOptions {
+  useNpm?: boolean;
+  copyOnly?: boolean;
+  useTailwind?: boolean;
+  stateLib: StoreLibs;
+}
+
 const createStepWrite = (total = 1) => {
   let count = 0;
   return (msg: string) => {
     count += 1;
-    console.warn(`✅ ${msg} (${count}/${total})`);
+    readline.clearLine(process.stdout, 0);
+    readline.cursorTo(process.stdout, 0);
+    console.log(`✅ ${msg} (${count}/${total})`);
   };
 };
 
@@ -40,15 +50,8 @@ const replacePackageJsonScripts = (appDir: string) => {
   fs.writeFileSync(packagePath, JSON.stringify(packageJSON, null, 2));
 };
 
-export const createAppAction = async (
-  appName: string,
-  options: { useNpm?: boolean; copyOnly?: boolean; stateLib: StoreLibs },
-): Promise<void> => {
-  const answers = await inquirer.prompt<{
-    useNpm?: boolean;
-    copyOnly?: boolean;
-    stateLib: StoreLibs;
-  }>(
+const startQuestions = (options: CreateAppOptions) =>
+  inquirer.prompt<CreateAppOptions>(
     [
       {
         type: 'list',
@@ -70,17 +73,26 @@ export const createAppAction = async (
           { checked: false, name: 'None', value: 'none' },
         ],
       },
+      {
+        name: 'useTailwind',
+        type: 'confirm',
+        message: 'Use TailwindCSS?',
+        default: true,
+      },
     ],
     options,
   );
+
+export const createAppAction = async (
+  appName: string,
+  options: CreateAppOptions,
+): Promise<void> => {
+  const answers = await startQuestions(options);
 
   const app = toHyphen(appName);
 
   const devDeps = [
     '@types/react-dom',
-    'tailwindcss',
-    'postcss',
-    'autoprefixer',
     '@inspireitdev/react-cli',
     '@types/react-router',
   ];
@@ -92,6 +104,12 @@ export const createAppAction = async (
     'react-hook-form',
     'react-router-dom@6',
   ];
+
+  if (answers.useTailwind) {
+    devDeps.push('tailwindcss');
+    devDeps.push('postcss');
+    devDeps.push('autoprefixer');
+  }
 
   switch (answers.stateLib) {
     case 'recoil':
@@ -134,13 +152,13 @@ export const createAppAction = async (
 
       if (!overwriteAnswer.overwrite) return;
 
-      console.warn(`🗑  Removing ${appDir}`);
+      console.log(`🗑  Removing ${appDir}`);
 
       await fsExtra.remove(appDir);
     }
 
-    console.warn('🏁 Creating app...');
-    const copyTemplateCommands = [
+    console.log('🏁 Creating app...');
+    const copyTemplateCommands: ShellCommand[] = [
       {
         commandFn: () => fsExtra.remove(srcDir),
         command: 'Removing CRA default src/ directory.',
@@ -152,9 +170,16 @@ export const createAppAction = async (
           fsExtra.copy(templatePath, appDir, {
             overwrite: true,
             filter: (filepath) => {
-              if (answers.stateLib === 'zustand') return true;
+              if (answers.stateLib === 'none' && filepath.includes('src/store'))
+                return false;
 
-              return !filepath.includes('src/store');
+              if (
+                !answers.useTailwind &&
+                filepath.includes('tailwind.config.js')
+              )
+                return false;
+
+              return true;
             },
           }),
         command: 'Copying InspireIT React template files.',
@@ -162,13 +187,25 @@ export const createAppAction = async (
         cwd: appDir,
       },
       {
-        command: 'npx tailwindcss init',
-        message: 'Initializing TailwindCSS!',
+        commandFn: () =>
+          fsExtra.writeJson(path.join(appDir, 'inspire-react.json'), answers, {
+            spaces: 2,
+          }),
+        command: 'Creating inspire-react.json file.',
+        message: 'inspire-react.json created!',
         cwd: appDir,
       },
     ];
 
-    const { copyOnly, useNpm } = options;
+    const { copyOnly, useNpm, useTailwind } = answers;
+
+    if (useTailwind) {
+      copyTemplateCommands.push({
+        command: 'npx tailwindcss init',
+        message: 'Initializing TailwindCSS!',
+        cwd: appDir,
+      });
+    }
 
     const steps: ShellCommand[] = copyOnly
       ? copyTemplateCommands
@@ -200,7 +237,8 @@ export const createAppAction = async (
     const stepWrite = createStepWrite(steps.length);
 
     for (const step of steps) {
-      console.warn(`ℹ️  Executing: ${step.command}`);
+      // console.log(`ℹ️  Executing: ${step.command}`);
+      process.stdout.write(`ℹ️  Executing: ${step.command}`);
 
       if (!step.commandFn && step.command) {
         await execSh.promise(step.command, { cwd: step.cwd, stdio: null });

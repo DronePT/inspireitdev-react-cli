@@ -10,7 +10,7 @@ import { toHyphen } from '../../utils/to-hyphen';
 import { createRecoilStore } from './recoil/create-store-recoil';
 import { createZustandStore } from './zustand/create-store-zustand';
 
-export type StoreLibs = 'zustand' | 'redux' | 'recoil';
+export type StoreLibs = 'zustand' | 'redux' | 'recoil' | 'none';
 export interface CreateStoreOptions {
   force?: boolean;
   lib?: StoreLibs;

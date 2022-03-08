@@ -36,7 +36,7 @@ export const createContextAction = async (
 
   const fileToCreate = createFile(
     contextPath.data,
-    `${context}.context.ts`,
+    `${context}.context.tsx`,
     getFromTemplate([__dirname, 'create-context.tpl'], {
       context: toCamelCase(context),
     }),

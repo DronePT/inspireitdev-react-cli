@@ -11,6 +11,7 @@ import * as domainCommand from './commands/domain';
 import * as utilCommand from './commands/util';
 import * as fileCommand from './commands/file';
 import * as createAppCommand from './commands/create-app';
+import * as contextCommand from './commands/context';
 
 import { getVersion } from './utils/get-version';
 
@@ -33,6 +34,7 @@ storeCommand.install(program);
 domainCommand.install(program);
 utilCommand.install(program);
 fileCommand.install(program);
+contextCommand.install(program);
 createAppCommand.install(program);
 
 (async () => {

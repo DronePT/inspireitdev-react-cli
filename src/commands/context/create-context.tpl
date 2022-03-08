@@ -1,4 +1,4 @@
-import { createContext, useState, FC } from 'react';
+import { createContext, useState, useContext, FC } from 'react';
 
 interface {{context}}ContextState {
   hello: string;
@@ -22,3 +22,5 @@ export const {{context}}Provider: FC = ({ children }) => {
     </{{context}}Context.Provider>
   );
 };
+
+export const use{{context}}Context = () => useContext({{context}}Context);

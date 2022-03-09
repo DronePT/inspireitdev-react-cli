@@ -3,8 +3,13 @@ import axios, {
   AxiosError,
   AxiosInstance,
   AxiosRequestConfig,
+  AxiosRequestTransformer,
   Method,
 } from 'axios';
+
+interface HttpOnRequest {
+  (data: any, headers: Record<string, string | number | boolean>): any;
+}
 
 export class HttpError<T> extends Error {
   code: number;
@@ -26,6 +31,8 @@ export class HttpClient {
 
   private resource: string;
 
+  private onRequest?: HttpOnRequest;
+
   constructor(
     resource: string,
     baseURL = process.env.REACT_APP_BASE_URL,
@@ -37,6 +44,12 @@ export class HttpClient {
       baseURL,
       ...config,
     });
+  }
+
+  protected setOnRequest(onRequest: HttpOnRequest) {
+    this.onRequest = onRequest;
+
+    return this;
   }
 
   private qs(url: string, query: Record<string, any> = {}): string {
@@ -58,11 +71,17 @@ export class HttpClient {
     config: AxiosRequestConfig = {},
   ): Promise<T> {
     try {
-      const result = await this.client.request({
+      const request = {
         method,
         url,
         ...config,
-      });
+      };
+
+      if (this.onRequest) {
+        request.transformRequest = this.onRequest as AxiosRequestTransformer;
+      }
+
+      const result = await this.client.request(request);
 
       return result.data;
     } catch (error) {

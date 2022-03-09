@@ -103,6 +103,7 @@ export const createAppAction = async (
     'node-sass',
     'react-hook-form',
     'react-router-dom@6',
+    'axios',
   ];
 
   if (answers.useTailwind) {

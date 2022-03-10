@@ -3,46 +3,38 @@ import plural from 'pluralize';
 import { Command } from 'commander';
 
 import { toCamelCase } from '../../utils/camel-case';
-import { createDirectory, createModulePath } from '../../utils/directory';
+import { createModulePath } from '../../utils/directory';
 import { Tasks } from '../../utils/tasks';
-import { createExportFile, createFile } from '../../utils/file';
-import { getFromTemplate } from '../../utils/template';
+import { createExportFile } from '../../utils/file';
 import { mapSeries } from '../../utils/map-series';
+import { createListPage } from './list/create-list-page';
+import { createListHook } from './list/create-list-hook';
+import { createListService } from './list/create-list-service';
+import { createEntity } from './entity/create-entity';
+import { createApi } from './api/create-api';
+
+type PageType = 'create' | 'read' | 'update' | 'delete' | 'list';
 
 interface CreateCrudOptions {
   force?: boolean;
-  pages: string[];
+  pages: PageType[];
 }
 
-const getPageName = (page: string, entity: string): string =>
-  ({
-    create: `Create${entity}Page`,
-    read: `View${entity}Page`,
-    update: `Update${entity}Page`,
-    delete: `Delete${entity}Page`,
-    list: `List${plural(entity)}Page`,
-  }[page] || '');
-
 const createPageFiles = (
-  page: string,
+  page: PageType,
   entity: string,
   modulePath: string,
   tasks: Tasks,
-): string => {
-  const pageName = getPageName(page, entity);
-  const pagePath = createDirectory([modulePath, 'pages', pageName]);
+): string[] => {
+  if (page === 'list') {
+    return [
+      createListPage(entity, modulePath, tasks),
+      createListService(entity, modulePath, tasks),
+      createListHook(entity, modulePath, tasks),
+    ];
+  }
 
-  if (!pagePath.exists) tasks.add('create-path', pagePath.data, pagePath.exec);
-
-  const fileToCreate = createFile(
-    pagePath.data,
-    `${pageName}.tsx`,
-    getFromTemplate([__dirname, '../page/create-page.tpl'], { page: pageName }),
-  );
-
-  tasks.add('create-file', fileToCreate.data, fileToCreate.exec);
-
-  return pagePath.data;
+  return [];
 };
 
 const getCreateCrudConfiguration = (
@@ -85,12 +77,14 @@ export const createCrudAction =
       tasks.add('create-path', modulePath.data, modulePath.exec);
 
     const files = [
-      ...config.pages.map((page) =>
-        createPageFiles(page, entity, modulePath.data, tasks),
-      ),
+      createEntity(entity, modulePath.data, tasks),
+      createApi(entity, modulePath.data, tasks),
+      ...config.pages
+        .map((page) => createPageFiles(page, entity, modulePath.data, tasks))
+        .flat(),
     ];
 
     if (await tasks.run()) {
-      await mapSeries(files, (file) => createExportFile(file, 'pages'));
+      await mapSeries(files, (file) => createExportFile(file, 'modules'));
     }
   };

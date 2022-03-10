@@ -25,6 +25,8 @@ export class Tasks {
   }
 
   async confirm(): Promise<boolean> {
+    if (!this.tasks.length) return false;
+
     console.log(
       table(
         this.tasks.map(([type, message]) => [typesPrefix[type], message]),

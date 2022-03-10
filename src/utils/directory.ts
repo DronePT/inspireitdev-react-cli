@@ -1,6 +1,8 @@
 import { Command } from 'commander';
 import mkdirp from 'mkdirp';
 import path from 'path';
+import fsExtra from 'fs-extra';
+
 import { toCamelCase } from './camel-case';
 
 export const createDirectory = (dirPath: string[]) => {
@@ -11,6 +13,7 @@ export const createDirectory = (dirPath: string[]) => {
   const p = path.join(...pathToCreate);
 
   return {
+    exists: fsExtra.existsSync(p),
     data: p,
     exec: () => {
       mkdirp.sync(p);

@@ -165,6 +165,28 @@ export const createAppAction = async (
 
     const stepsConfiguration: ShellCommand[] = [
       {
+        execute: !copyOnly,
+        command: `npx create-react-app ${app}${
+          useNpm ? ' --use-mpm' : ''
+        } --template typescript`,
+        message: 'create-react-app done!',
+        cwd: process.cwd(),
+      },
+      {
+        execute: !copyOnly,
+        command: `${
+          useNpm ? 'npm install --save-dev' : 'yarn add --dev'
+        } ${devDeps.join(' ')}`,
+        message: 'Dev dependencies installed!',
+        cwd: appDir,
+      },
+      {
+        execute: !copyOnly,
+        command: `${useNpm ? 'npm install' : 'yarn add'} ${prodDeps.join(' ')}`,
+        message: 'Production dependencies installed!',
+        cwd: appDir,
+      },
+      {
         execute: true,
         commandFn: () => fsExtra.remove(srcDir),
         command: 'Removing CRA default src/ directory.',
@@ -209,28 +231,6 @@ export const createAppAction = async (
         execute: !!useTailwind,
         command: 'npx tailwindcss init',
         message: 'Initializing TailwindCSS!',
-        cwd: appDir,
-      },
-      {
-        execute: !copyOnly,
-        command: `npx create-react-app ${app}${
-          useNpm ? ' --use-mpm' : ''
-        } --template typescript`,
-        message: 'create-react-app done!',
-        cwd: process.cwd(),
-      },
-      {
-        execute: !copyOnly,
-        command: `${
-          useNpm ? 'npm install --save-dev' : 'yarn add --dev'
-        } ${devDeps.join(' ')}`,
-        message: 'Dev dependencies installed!',
-        cwd: appDir,
-      },
-      {
-        execute: !copyOnly,
-        command: `${useNpm ? 'npm install' : 'yarn add'} ${prodDeps.join(' ')}`,
-        message: 'Production dependencies installed!',
         cwd: appDir,
       },
       {

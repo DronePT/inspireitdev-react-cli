@@ -16,6 +16,7 @@ interface ExecError {
 }
 
 interface ShellCommand {
+  execute: boolean;
   commandFn?: () => Promise<void>;
   command: string;
   message: string;
@@ -42,6 +43,7 @@ const createStepWrite = (total = 1) => {
 const replacePackageJsonScripts = (appDir: string) => {
   const packagePath = path.join(appDir, 'package.json');
   const packageJSON = JSON.parse(fs.readFileSync(packagePath).toString());
+
   packageJSON.scripts = {
     ...packageJSON.scripts,
     cli: 'inspire-react',
@@ -88,6 +90,7 @@ export const createAppAction = async (
   options: CreateAppOptions,
 ): Promise<void> => {
   const answers = await startQuestions(options);
+  const { copyOnly, useNpm, useTailwind, stateLib } = answers;
 
   const app = toHyphen(appName);
 
@@ -106,13 +109,13 @@ export const createAppAction = async (
     'axios',
   ];
 
-  if (answers.useTailwind) {
+  if (useTailwind) {
     devDeps.push('tailwindcss');
     devDeps.push('postcss');
     devDeps.push('autoprefixer');
   }
 
-  switch (answers.stateLib) {
+  switch (stateLib) {
     case 'recoil':
       prodDeps.push('recoil');
       devDeps.push('@types/recoil');
@@ -159,25 +162,25 @@ export const createAppAction = async (
     }
 
     console.log('🏁 Creating app...');
-    const copyTemplateCommands: ShellCommand[] = [
+
+    const stepsConfiguration: ShellCommand[] = [
       {
+        execute: true,
         commandFn: () => fsExtra.remove(srcDir),
         command: 'Removing CRA default src/ directory.',
         message: 'CRA default src/ directory removed!',
         cwd: appDir,
       },
       {
+        execute: true,
         commandFn: () =>
           fsExtra.copy(templatePath, appDir, {
             overwrite: true,
             filter: (filepath) => {
-              if (answers.stateLib === 'none' && filepath.includes('src/store'))
+              if (stateLib === 'none' && filepath.includes('src/store'))
                 return false;
 
-              if (
-                !answers.useTailwind &&
-                filepath.includes('tailwind.config.js')
-              )
+              if (!useTailwind && filepath.includes('tailwind.config.js'))
                 return false;
 
               return true;
@@ -188,6 +191,35 @@ export const createAppAction = async (
         cwd: appDir,
       },
       {
+        execute: !!useTailwind,
+        command: 'npx tailwindcss init',
+        message: 'Initializing TailwindCSS!',
+        cwd: appDir,
+      },
+      {
+        execute: !copyOnly,
+        command: `npx create-react-app ${app}${
+          useNpm ? ' --use-mpm' : ''
+        } --template typescript`,
+        message: 'create-react-app done!',
+        cwd: process.cwd(),
+      },
+      {
+        execute: !copyOnly,
+        command: `${
+          useNpm ? 'npm install --save-dev' : 'yarn add --dev'
+        } ${devDeps.join(' ')}`,
+        message: 'Dev dependencies installed!',
+        cwd: appDir,
+      },
+      {
+        execute: !copyOnly,
+        command: `${useNpm ? 'npm install' : 'yarn add'} ${prodDeps.join(' ')}`,
+        message: 'Production dependencies installed!',
+        cwd: appDir,
+      },
+      {
+        execute: true,
         commandFn: () =>
           fsExtra.writeJson(path.join(appDir, 'inspire-react.json'), answers, {
             spaces: 2,
@@ -196,49 +228,20 @@ export const createAppAction = async (
         message: 'inspire-react.json created!',
         cwd: appDir,
       },
+      {
+        execute: !copyOnly,
+        commandFn: async () => replacePackageJsonScripts(app),
+        command: 'Configuring package.json',
+        message: 'package.json configured!',
+        cwd: appDir,
+      },
     ];
 
-    const { copyOnly, useNpm, useTailwind } = answers;
-
-    if (useTailwind) {
-      copyTemplateCommands.push({
-        command: 'npx tailwindcss init',
-        message: 'Initializing TailwindCSS!',
-        cwd: appDir,
-      });
-    }
-
-    const steps: ShellCommand[] = copyOnly
-      ? copyTemplateCommands
-      : [
-          {
-            command: `npx create-react-app ${app}${
-              useNpm ? ' --use-mpm' : ''
-            } --template typescript`,
-            message: 'create-react-app done!',
-            cwd: process.cwd(),
-          },
-          {
-            command: `${
-              useNpm ? 'npm install --save-dev' : 'yarn add --dev'
-            } ${devDeps.join(' ')}`,
-            message: 'Dev dependencies installed!',
-            cwd: appDir,
-          },
-          {
-            command: `${useNpm ? 'npm install' : 'yarn add'} ${prodDeps.join(
-              ' ',
-            )}`,
-            message: 'Production dependencies installed!',
-            cwd: appDir,
-          },
-          ...copyTemplateCommands,
-        ];
+    const steps = stepsConfiguration.filter((step) => step.execute);
 
     const stepWrite = createStepWrite(steps.length);
 
     for (const step of steps) {
-      // console.log(`ℹ️  Executing: ${step.command}`);
       process.stdout.write(`ℹ️  Executing: ${step.command}`);
 
       if (!step.commandFn && step.command) {
@@ -249,8 +252,6 @@ export const createAppAction = async (
 
       stepWrite(step.message);
     }
-
-    if (!copyOnly) replacePackageJsonScripts(app);
 
     console.log('Done! 🎉');
   } catch (e) {

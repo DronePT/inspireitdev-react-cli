@@ -191,6 +191,21 @@ export const createAppAction = async (
         cwd: appDir,
       },
       {
+        execute: stateLib === 'none',
+        commandFn: async () => {
+          const indexPath = path.join(appDir, 'src/index.tsx');
+          // import '\.\/store';\n
+          const data = (await fsExtra.readFile(indexPath))
+            .toString()
+            .replace(/import '\.\/store';\n/gi, '');
+
+          return fsExtra.writeFile(indexPath, data);
+        },
+        command: `Removing "import './store';" from src/index.tsx`,
+        message: `"import './store';" removed from src/index.tsx`,
+        cwd: appDir,
+      },
+      {
         execute: !!useTailwind,
         command: 'npx tailwindcss init',
         message: 'Initializing TailwindCSS!',

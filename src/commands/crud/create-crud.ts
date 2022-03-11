@@ -16,6 +16,10 @@ import { createApi } from './api/create-api';
 import { createReadPage } from './read/create-read-page';
 import { createReadService } from './read/create-read-service';
 import { createReadHook } from './read/create-read-hook';
+import { createCreatePage } from './create/create-create-page';
+import { createCreateFormComponent } from './create/create-form-component';
+import { createCreateHook } from './create/create-create-hook';
+import { createCreateService } from './create/create-create-service';
 
 type PageType = 'create' | 'read' | 'update' | 'delete' | 'list';
 
@@ -43,6 +47,13 @@ const createPageFiles = (
         createReadService(entity, modulePath, tasks),
         createReadHook(entity, modulePath, tasks),
       ];
+    case 'create':
+      return [
+        createCreateFormComponent(entity, modulePath, tasks),
+        createCreatePage(entity, modulePath, tasks),
+        createCreateService(entity, modulePath, tasks),
+        createCreateHook(entity, modulePath, tasks),
+      ];
     default:
       return [];
   }
@@ -59,7 +70,7 @@ const getCreateCrudConfiguration = (
         name: 'pages',
         message: 'Choose the pages to create',
         choices: [
-          { name: `Create${entity}Page`, value: 'create' },
+          { name: `Create${entity}Page`, value: 'create', checked: true },
           { name: `View${entity}Page`, value: 'read' },
           { name: `Update${entity}Page`, value: 'update' },
           { name: `Delete${entity}Page`, value: 'delete' },

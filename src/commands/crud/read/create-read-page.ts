@@ -1,12 +1,10 @@
-import plural from 'pluralize';
 import { toCamelCase } from '../../../utils/camel-case';
 import { createDirectory } from '../../../utils/directory';
 import { createFile } from '../../../utils/file';
 import { Tasks } from '../../../utils/tasks';
 import { getFromTemplate } from '../../../utils/template';
-import { toHyphen } from '../../../utils/to-hyphen';
 
-export const createApi = (
+export const createReadPage = (
   entity: string,
   modulePath: string,
   tasks: Tasks,
@@ -14,28 +12,21 @@ export const createApi = (
   const upperEntity = toCamelCase(entity);
   const lowerEntity = toCamelCase(entity, false);
 
-  const slugEntity = toHyphen(entity);
-  const slugEntityPlural = toHyphen(plural(entity));
+  const pageName = `View${upperEntity}Page`;
+  const pagePath = createDirectory([modulePath, 'pages', pageName]);
 
-  const utilsPath = createDirectory([modulePath, 'utils']);
-
-  if (!utilsPath.exists)
-    tasks.add('create-path', utilsPath.data, utilsPath.exec);
+  if (!pagePath.exists) tasks.add('create-path', pagePath.data, pagePath.exec);
 
   const fileToCreate = createFile(
-    utilsPath.data,
-    `${slugEntity}-api.util.ts`,
-    getFromTemplate([__dirname, './api.tpl'], {
+    pagePath.data,
+    `${pageName}.tsx`,
+    getFromTemplate([__dirname, './read-page.template.tpl'], {
       upperEntity,
       lowerEntity,
-      slugEntity,
-      slugEntityPlural,
     }),
   );
 
-  if (fileToCreate.exists) return '';
-
   tasks.add('create-file', fileToCreate.data, fileToCreate.exec);
 
-  return utilsPath.data;
+  return pagePath.data;
 };

@@ -7,11 +7,15 @@ import { createModulePath } from '../../utils/directory';
 import { Tasks } from '../../utils/tasks';
 import { createExportFile } from '../../utils/file';
 import { mapSeries } from '../../utils/map-series';
+
 import { createListPage } from './list/create-list-page';
 import { createListHook } from './list/create-list-hook';
 import { createListService } from './list/create-list-service';
 import { createEntity } from './entity/create-entity';
 import { createApi } from './api/create-api';
+import { createReadPage } from './read/create-read-page';
+import { createReadService } from './read/create-read-service';
+import { createReadHook } from './read/create-read-hook';
 
 type PageType = 'create' | 'read' | 'update' | 'delete' | 'list';
 
@@ -26,15 +30,22 @@ const createPageFiles = (
   modulePath: string,
   tasks: Tasks,
 ): string[] => {
-  if (page === 'list') {
-    return [
-      createListPage(entity, modulePath, tasks),
-      createListService(entity, modulePath, tasks),
-      createListHook(entity, modulePath, tasks),
-    ];
+  switch (page) {
+    case 'list':
+      return [
+        createListPage(entity, modulePath, tasks),
+        createListService(entity, modulePath, tasks),
+        createListHook(entity, modulePath, tasks),
+      ];
+    case 'read':
+      return [
+        createReadPage(entity, modulePath, tasks),
+        createReadService(entity, modulePath, tasks),
+        createReadHook(entity, modulePath, tasks),
+      ];
+    default:
+      return [];
   }
-
-  return [];
 };
 
 const getCreateCrudConfiguration = (
@@ -82,7 +93,7 @@ export const createCrudAction =
       ...config.pages
         .map((page) => createPageFiles(page, entity, modulePath.data, tasks))
         .flat(),
-    ];
+    ].filter((f) => f !== '');
 
     if (await tasks.run()) {
       await mapSeries(files, (file) => createExportFile(file, 'modules'));

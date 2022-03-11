@@ -23,9 +23,10 @@ export const createFile = (
   overwrite = false,
 ) => {
   const resolvedFilePath = path.join(filepath, filename);
+  const exists = fileExists(resolvedFilePath);
 
   const exec = async (ow = overwrite) => {
-    if (!ow && fileExists(resolvedFilePath)) {
+    if (!ow && exists) {
       const answers = await inquirer.prompt([
         {
           type: 'confirm',
@@ -57,6 +58,7 @@ export const createFile = (
   };
 
   return {
+    exists,
     data: resolvedFilePath,
     exec,
   };

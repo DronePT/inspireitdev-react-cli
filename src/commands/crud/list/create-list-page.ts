@@ -11,6 +11,9 @@ export const createListPage = (
   tasks: Tasks,
 ): string => {
   const entityPlural = plural(entity);
+
+  const upperEntity = toCamelCase(entity);
+  const lowerEntity = toCamelCase(entity, false);
   const upperEntityPlural = toCamelCase(entityPlural);
   const lowerEntityPlural = toCamelCase(entityPlural, false);
 
@@ -23,6 +26,8 @@ export const createListPage = (
     pagePath.data,
     `${pageName}.tsx`,
     getFromTemplate([__dirname, './list-page.template.tpl'], {
+      upperEntity,
+      lowerEntity,
       upperEntityPlural,
       lowerEntityPlural,
     }),

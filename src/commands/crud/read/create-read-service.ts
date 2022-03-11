@@ -6,36 +6,37 @@ import { Tasks } from '../../../utils/tasks';
 import { getFromTemplate } from '../../../utils/template';
 import { toHyphen } from '../../../utils/to-hyphen';
 
-export const createApi = (
+export const createReadService = (
   entity: string,
   modulePath: string,
   tasks: Tasks,
 ): string => {
+  const entityPlural = plural(entity);
+
   const upperEntity = toCamelCase(entity);
   const lowerEntity = toCamelCase(entity, false);
+  const upperEntityPlural = toCamelCase(entityPlural);
+  const lowerEntityPlural = toCamelCase(entityPlural, false);
 
   const slugEntity = toHyphen(entity);
-  const slugEntityPlural = toHyphen(plural(entity));
 
-  const utilsPath = createDirectory([modulePath, 'utils']);
+  const servicePath = createDirectory([modulePath, 'services']);
 
-  if (!utilsPath.exists)
-    tasks.add('create-path', utilsPath.data, utilsPath.exec);
+  if (!servicePath.exists)
+    tasks.add('create-path', servicePath.data, servicePath.exec);
 
   const fileToCreate = createFile(
-    utilsPath.data,
-    `${slugEntity}-api.util.ts`,
-    getFromTemplate([__dirname, './api.tpl'], {
+    servicePath.data,
+    `get-${slugEntity}.service.ts`,
+    getFromTemplate([__dirname, './read-service.template.tpl'], {
       upperEntity,
       lowerEntity,
-      slugEntity,
-      slugEntityPlural,
+      upperEntityPlural,
+      lowerEntityPlural,
     }),
   );
 
-  if (fileToCreate.exists) return '';
-
   tasks.add('create-file', fileToCreate.data, fileToCreate.exec);
 
-  return utilsPath.data;
+  return servicePath.data;
 };

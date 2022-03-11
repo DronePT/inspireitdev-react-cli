@@ -1,4 +1,3 @@
-import plural from 'pluralize';
 import { toCamelCase } from '../../../utils/camel-case';
 import { createDirectory } from '../../../utils/directory';
 import { createFile } from '../../../utils/file';
@@ -29,6 +28,8 @@ export const createEntity = (
       lowerEntity,
     }),
   );
+
+  if (fileToCreate.exists) return '';
 
   tasks.add('create-file', fileToCreate.data, fileToCreate.exec);
 

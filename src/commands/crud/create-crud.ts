@@ -20,6 +20,10 @@ import { createCreatePage } from './create/create-create-page';
 import { createCreateFormComponent } from './create/create-form-component';
 import { createCreateHook } from './create/create-create-hook';
 import { createCreateService } from './create/create-create-service';
+import { createUpdateFormComponent } from './update/create-update-form-component';
+import { createUpdatePage } from './update/create-update-page';
+import { createUpdateService } from './update/create-update-service';
+import { createUpdateHook } from './update/create-update-hook';
 
 type PageType = 'create' | 'read' | 'update' | 'delete' | 'list';
 
@@ -54,6 +58,14 @@ const createPageFiles = (
         createCreateService(entity, modulePath, tasks),
         createCreateHook(entity, modulePath, tasks),
       ];
+    case 'update':
+      return [
+        createUpdateFormComponent(entity, modulePath, tasks),
+        createUpdatePage(entity, modulePath, tasks),
+        createReadService(entity, modulePath, tasks),
+        createUpdateService(entity, modulePath, tasks),
+        createUpdateHook(entity, modulePath, tasks),
+      ];
     default:
       return [];
   }
@@ -70,9 +82,9 @@ const getCreateCrudConfiguration = (
         name: 'pages',
         message: 'Choose the pages to create',
         choices: [
-          { name: `Create${entity}Page`, value: 'create', checked: true },
+          { name: `Create${entity}Page`, value: 'create' },
           { name: `View${entity}Page`, value: 'read' },
-          { name: `Update${entity}Page`, value: 'update' },
+          { name: `Update${entity}Page`, value: 'update', checked: true },
           { name: `Delete${entity}Page`, value: 'delete' },
           { name: `List${plural(entity)}Page`, value: 'list' },
         ],

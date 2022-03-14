@@ -24,6 +24,8 @@ import { createUpdateFormComponent } from './update/create-update-form-component
 import { createUpdatePage } from './update/create-update-page';
 import { createUpdateService } from './update/create-update-service';
 import { createUpdateHook } from './update/create-update-hook';
+import { createDeleteService } from './delete/create-delete-service';
+import { createDeleteHook } from './delete/create-delete-hook';
 
 type PageType = 'create' | 'read' | 'update' | 'delete' | 'list';
 
@@ -65,6 +67,11 @@ const createPageFiles = (
         createReadService(entity, modulePath, tasks),
         createUpdateService(entity, modulePath, tasks),
         createUpdateHook(entity, modulePath, tasks),
+      ];
+    case 'delete':
+      return [
+        createDeleteService(entity, modulePath, tasks),
+        createDeleteHook(entity, modulePath, tasks),
       ];
     default:
       return [];

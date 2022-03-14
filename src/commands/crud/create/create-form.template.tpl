@@ -1,8 +1,13 @@
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
+
+interface Create{{upperEntity}}FormData {
+  example: string;
+  exampleRequired: string;
+}
 
 interface Create{{upperEntity}}FormProps {
   children?: React.ReactNode;
-  onSubmit: (data: any) => void;
+  onSubmit: SubmitHandler<Create{{upperEntity}}FormData>;
 }
 
 export const Create{{upperEntity}}Form = ({
@@ -12,7 +17,7 @@ export const Create{{upperEntity}}Form = ({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<Create{{upperEntity}}FormData>();
 
   return (
     /* "handleSubmit" will validate your inputs before invoking "onSubmit" */
